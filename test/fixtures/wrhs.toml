@@ -1,0 +1,17 @@
+[minify]
+[minify.compress]
+unsafe = true
+dead_code = true
+collapse_vars = true
+drop_console = true
+conditionals = true
+booleans = true
+unused = true
+if_return = true
+join_vars = true
+
+[minify.mangle]
+toplevel = true
+
+[minify.mangleProperties]
+regex = '^(interopRequireDefault|possibleConstructorReturn|phasedRegistrationNames|exports|classCallCheck|createClass|debugTool|displayName|inherits|captured|getNodeFromInstance|bubbled|ReactEventListener|getNativeProps|getReactMountReady|trapBubbledEvent|getName|getInstanceFromNode|enumerable|onNativeOperation|extends|onBeginLifeCycleTimer|registrationNameModules|shouldIntlComponentUpdate|onEndLifeCycleTimer|injection|canUseDOM|_{1}[^_].+)'

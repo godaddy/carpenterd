@@ -1,0 +1,16 @@
+{
+  "version": 3,
+  "file": "script.js.map",
+  "sources": [
+    "app.js",
+    "content.js",
+    "widget.js"
+  ],
+  "sourceRoot": "/",
+  "names": [
+    "slideUp",
+    "slideDown",
+    "save"
+  ],
+  "mappings": "AAA0B,kBAAhBA,QAAOC,SACjBD,OAAOC,OAAO"
+}

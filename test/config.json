@@ -1,0 +1,76 @@
+{
+  "throttle": 3,
+  "http": {
+    "timeout": 1200000,
+    "hostname": "127.0.0.1",
+    "port": 1337
+  },
+  "logger": { "silent": true },
+  "npm": {
+    "registry": "https://registry.npmjs.org",
+    "loglevel": "warn"
+  },
+  "json": {
+    "limit": "100mb",
+    "extended": false
+  },
+  "builder": {
+    "retries": 2,
+    "timeout": 900000,
+    "target": "/tmp",
+    "source": "/tmp"
+  },
+  "feedsme": "http://127.0.0.1:1212",
+  "redis": {
+    "uri": "redis://127.0.0.1:6379"
+  },
+  "bffs": {
+    "prefix": "wrhs",
+    "cdn": {
+      "prod": {
+        "pkgcloud": {
+          "provider": "amazon",
+          "endpoint": "aws.amazon.net",
+          "keyId": "fake",
+          "key": "fake",
+          "forcePathBucket": true
+        },
+        "url": "https://mycloudfrontURL.com"
+      },
+      "test": {
+        "pkgcloud": {
+          "provider": "amazon",
+          "endpoint": "aws.amazon.net",
+          "keyId": "fake",
+          "key": "fake",
+          "forcePathBucket": true
+        },
+        "url": "https://mycloudfrontURL.com"
+      },
+      "dev": {
+        "pkgcloud": {
+          "provider": "amazon",
+          "endpoint": "aws.amazon.net",
+          "keyId": "fake",
+          "key": "fake",
+          "forcePathBucket": true
+        },
+        "url": "https://mycloudfrontURL.com/"
+      }
+    }
+  },
+  "datastar": {
+    "config": {
+      "keyspace": "carpenter_test",
+      "user": "cassandra",
+      "password": "cassandra",
+      "hosts": [
+        "127.0.0.1"
+      ],
+      "keyspaceOptions": {
+        "class": "SimpleStrategy",
+        "replication_factor": 1
+      }
+    }
+  }
+}
