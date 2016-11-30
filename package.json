@@ -57,7 +57,7 @@
     "warehouse-models": "^5.0.0",
     "repair": "~0.1.0",
     "safe-regex": "~1.1.0",
-    "slay": "^0.6.0",
+    "slay": "^1.0.0",
     "slay-config": "^2.0.1",
     "slay-contextlog": "^3.0.0",
     "slay-log": "^2.1.0",
