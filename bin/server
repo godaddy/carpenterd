@@ -1,0 +1,9 @@
+#!/usr/bin/env node
+'use strict';
+
+require('../lib/').start(function listen(error, app) {
+  if (error) return app.log.error(error.message);
+
+  const config = app.config.get('https') || app.config.get('http') || {};
+  app.log.verbose('Carpenter started on %s:%d', config.hostname, config.port);
+});
