@@ -63,7 +63,7 @@
     "tar-fs": "~1.8.1",
     "through2": "~2.0.0",
     "toml": "^2.3.0",
-    "uglify-js": "git://github.com/Swaagie/UglifyJS2.git#fcb4f2f",
+    "uglify-js": "^2.7.5",
     "walk": "~2.3.9",
     "webpack": "^1.12.12",
     "winston": "^2.2.0"
