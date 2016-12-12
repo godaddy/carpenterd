@@ -200,7 +200,7 @@ describe('Progress', function () {
       assume(result).to.be.instanceof(Stream);
 
       progress.start();
-      const start = JSON.parse(progress.stream._readableState.buffer.toString());
+      const start = JSON.parse(progress.stream._readableState.buffer.head.data.toString());
       assume(start).to.have.property('message', 'start');
       assume(start).to.have.property('event', 'task');
       assume(start).to.have.property('progress', 0);
