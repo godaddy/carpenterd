@@ -1,0 +1,9 @@
+language: node_js
+node_js:
+  - "6"
+  - "4"
+services:
+  - cassandra
+  - redis-server
+before_install:
+  - "npm install -g npm@3"
