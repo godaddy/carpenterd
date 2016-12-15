@@ -1,6 +1,6 @@
 # carpenterd
 
-Build and compile npm packages to run in the browser. This API is capable of building modules through different build systems. The aim is to have full cross-build-system API that serves a single file to be used in the browser. Note that this API should only be hit from the Design Registry.
+Build and compile npm packages to run in the browser. This API is capable of building modules through different build systems. The aim is to have full cross-build-system API that serves a single file to be used in the browser. Note that this API should only be hit from the [`warehouse.ai`][warehouse.ai].
 
 ##### Build systems
 
@@ -63,7 +63,7 @@ redis-server
 
 ### Tests
 
-Running the tests will require a connection to the GoDaddy VPN or physical connection to the local network. In addition, [Redis](#starting-redis) will have to be running.
+Running the tests will require a running cassandra instance on your local machine and [Redis](#starting-redis) will have to be running.
 
 ```bash
 npm test
@@ -188,11 +188,7 @@ test = ['dist/js/app.js', 'dist/css/app.css']
 dev = ['dist/js/app.js', 'dist/css/app.css'];
 ```
 
-## Tests
-
-```sh
-npm test
-```
-
 ## License
 MIT
+
+[warehouse.ai]: https://github.com/godaddy/warehouse.ai
