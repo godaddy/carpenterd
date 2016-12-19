@@ -11,7 +11,7 @@ const fs = require('fs');
 
 const Agent = require('http').Agent;
 
-const agent = new Agent({ keepAlive: true, timeout: 12000000 });
+const agent = new Agent({ keepAlive: true });
 
 let app = require('../../../lib/');
 
@@ -65,6 +65,7 @@ describe('Application routes', function () {
   });
 
   after(function (done) {
+    agent.destroy();
     app.close(done);
   });
 
