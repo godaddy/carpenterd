@@ -9,6 +9,10 @@ const zlib = require('zlib');
 const url = require('url');
 const fs = require('fs');
 
+const Agent = require('http').Agent;
+
+const agent = new Agent({ keepAlive: true, timeout: 12000000 });
+
 let app = require('../../../lib/');
 
 describe('Application routes', function () {
@@ -47,7 +51,11 @@ describe('Application routes', function () {
       config: {
         file: configFile,
         overrides: {
-          http: 0
+          http: {
+            hostname: '127.0.0.1',
+            port: 0,
+            timeout: 12000000
+          }
         }
       }
     }, function (error, appInstance) {
@@ -71,6 +79,7 @@ describe('Application routes', function () {
     target.pathname = pathname;
 
     return hyperquest[method](url.format(target), {
+      agent: agent,
       headers: {
         'Content-Type': 'application/json'
       }
