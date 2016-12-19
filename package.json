@@ -61,7 +61,7 @@
     "safe-regex": "~1.1.0",
     "slay": "^1.0.0",
     "slay-config": "^2.0.1",
-    "slay-contextlog": "^1.0.0",
+    "slay-contextlog": "~2.0.0",
     "slay-log": "^2.1.0",
     "tar-fs": "~1.8.1",
     "through2": "~2.0.0",
