@@ -16,7 +16,7 @@ const agent = new Agent({ keepAlive: true });
 let app = require('../../../lib/');
 
 describe('Application routes', function () {
-  this.timeout(3E5); // eslint-disable-line
+  this.timeout(5E5); // eslint-disable-line
 
   const payload = path.join(__dirname, '..', '..', 'fixtures', 'payload-0.0.0.json');
   const configFile = path.join(__dirname, '..', '..', 'config.json')
