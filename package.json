@@ -59,7 +59,7 @@
     "one-time": "~0.0.4",
     "repair": "~0.1.0",
     "safe-regex": "~1.1.0",
-    "slay": "^1.0.0",
+    "slay": "~1.0.1",
     "slay-config": "^2.0.1",
     "slay-contextlog": "~2.0.0",
     "slay-log": "^2.1.0",
