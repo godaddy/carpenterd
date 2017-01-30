@@ -140,7 +140,7 @@ describe('Application routes', function () {
       post.end(new Buffer(JSON.stringify(data)));
 
       app.construct.once('store', function store(spec, progress, resData) {
-        const file = resData.files.files[0];
+        const file = resData.files.files.find(file => file.filename === 'index.min.jsx');
 
         assume(file.compressed).is.a('string');
         assume(file.content).is.a('string');
