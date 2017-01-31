@@ -342,10 +342,10 @@ describe('Factory', function () {
 
         const sourceMap = JSON.parse(factory.output['index.min.js.map'].content);
         assume(factory.output).to.be.an('object');
-        assume(factory.output['index.js'].content).to.be.instanceof(Buffer);
-        assume(factory.output['index.js'].content.toString()).to.include('function boolier(t){test=!!t}var test=!0;');
-        assume(factory.output['index.js'].content.toString()).to.include('\n//# sourceMappingURL=index.min.js.map');
-        assume(factory.output['index.js'].fingerprint).to.equal('81f4d1d4136aaec3e75e54e626a420bf');
+        assume(factory.output['index.min.js'].content).to.be.instanceof(Buffer);
+        assume(factory.output['index.min.js'].content.toString()).to.include('function boolier(t){test=!!t}var test=!0;');
+        assume(factory.output['index.min.js'].content.toString()).to.include('\n//# sourceMappingURL=index.min.js.map');
+        assume(factory.output['index.min.js'].fingerprint).to.equal('81f4d1d4136aaec3e75e54e626a420bf');
         assume(factory.output['index.min.js.map'].content).to.be.instanceof(Buffer);
 
         assume(sourceMap).to.be.an('object');
@@ -372,9 +372,9 @@ describe('Factory', function () {
         if (error) return done(error);
 
         assume(factory.output).to.be.an('object');
-        assume(factory.output['index.js'].content).to.be.instanceof(Buffer);
-        assume(factory.output['index.js'].content.toString()).to.include('function n(n){a=!!n}var a=!0;');
-        assume(factory.output['index.js'].fingerprint).to.equal('925a9e5153bc095668727d0bf6c425f8');
+        assume(factory.output['index.min.js'].content).to.be.instanceof(Buffer);
+        assume(factory.output['index.min.js'].content.toString()).to.include('function n(n){a=!!n}var a=!0;');
+        assume(factory.output['index.min.js'].fingerprint).to.equal('925a9e5153bc095668727d0bf6c425f8');
         done();
       });
 
@@ -389,10 +389,10 @@ describe('Factory', function () {
         if (error) return done(error);
 
         assume(factory.output).to.be.an('object');
-        assume(factory.output['base.css'].content).to.be.instanceof(Buffer);
-        assume(factory.output['base.css'].content.toString()).to.include('span{margin:0;font-size:12px;color:#FFF}');
-        assume(factory.output['base.css'].content.toString()).to.include('/*# sourceMappingURL=base.min.css.map */');
-        assume(factory.output['base.css'].fingerprint).to.equal('c1ca21d1fe09e2816067d80e3d9368bd');
+        assume(factory.output['base.min.css'].content).to.be.instanceof(Buffer);
+        assume(factory.output['base.min.css'].content.toString()).to.include('span{margin:0;font-size:12px;color:#FFF}');
+        assume(factory.output['base.min.css'].content.toString()).to.include('/*# sourceMappingURL=base.min.css.map */');
+        assume(factory.output['base.min.css'].fingerprint).to.equal('c1ca21d1fe09e2816067d80e3d9368bd');
         assume(factory.output['base.min.css.map'].content).to.be.instanceof(Buffer);
         done();
       });
