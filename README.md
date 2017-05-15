@@ -12,6 +12,8 @@ Build and compile npm packages to run in the browser. This API is capable of bui
 
 * _WebPack:_ will read the webpack configuration file, which is `webpack.config.js` per default. There are no enforced limitation for the config, anything JS goes. However note: the output directory will have to be `./dist` by our convention. All files in the output directory will be published to BFFS.
 
+* _NPM:_ will read the `package.json` for the build script (`scripts.build`) and build the output via the command `npm run build`. However note: the output directory will have to be `./dist` by our convention. All files in the output directory will be published to BFFS.
+
 ##### Identification of build system type
 
 Specify a build system in `package.json` with the `build` keyword or use any of the following terms in the keywords:

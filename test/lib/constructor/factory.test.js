@@ -9,6 +9,7 @@ describe('Factory', function () {
   const browserifyworker = require('../../../lib/constructor/workers/browserify');
   const webpackworker = require('../../../lib/constructor/workers/webpack');
   const es6worker = require('../../../lib/constructor/workers/es6');
+  const npmworker = require('../../../lib/constructor/workers/npm');
   const Factory = require('../../../lib/constructor/factory');
   const exec = require('child_process').exec;
   const map = require('../../fixtures/map');
@@ -45,7 +46,7 @@ describe('Factory', function () {
   //
   before(function (done) {
     const base = path.join(__dirname, '..', '..', '..');
-    const locations = ['es6', 'webpack', 'browserify', 'other'];
+    const locations = ['es6', 'webpack', 'browserify', 'other', 'npm'];
 
     this.timeout(6E5);
 
@@ -269,6 +270,33 @@ describe('Factory', function () {
 
         assume(Object.keys(factory.output)).to.have.length(4);
         assume(Object.keys(factory.compressed)).to.have.length(4);
+
+        done();
+      });
+    });
+
+    it('can run npm builds', function (done) {
+      const data = config('npm');
+
+      this.timeout(5000);
+
+      run(new Factory(data, npmworker), function (error, factory) {
+        if (error) return done(error);
+
+        const output = factory.output['bundle.js'].toString('utf-8');
+        const compressed = factory.compressed['bundle.js'];
+
+        assume(factory.base).to.include('npm');
+        assume(output).to.include('NPM Build an ES6 React component');
+        assume(output).to.include('return _react.React.createElement(');
+        assume(output).to.include('_inherits(Test, _React$Component);');
+
+        // test for gzip header magic numbers and deflate compression
+        assume(compressed[0]).to.equal(31);
+        assume(compressed[1]).to.equal(139);
+        assume(compressed[2]).to.equal(8);
+
+        assume(zlib.gunzipSync(compressed).toString('utf-8')).to.equal(output)
 
         done();
       });
