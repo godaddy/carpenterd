@@ -1,6 +1,6 @@
 {
   "name": "carpenterd",
-  "version": "1.8.1",
+  "version": "1.8.2",
   "description": "Build and compile npm packages",
   "main": "./lib/index.js",
   "bin": {
