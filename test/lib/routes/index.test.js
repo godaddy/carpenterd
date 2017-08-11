@@ -91,7 +91,6 @@ describe('Application routes', function () {
     function validateMessages(data) {
       data = JSON.parse(data);
 
-      assume(data).to.have.property('event', 'task');
       assume(data.task).to.not.equal('ignored');
       assume(data).to.have.property('progress');
       assume(data).to.have.property('message');
@@ -139,8 +138,8 @@ describe('Application routes', function () {
 
       post.end(new Buffer(JSON.stringify(data)));
 
-      app.construct.once('store', function store(spec, progress, resData) {
-        const file = resData.files.files.find(file => file.filename === 'index.min.jsx');
+      app.construct.once('store', function store(spec, progress, files) {
+        const file = files.files.find(file => file.filename === 'index.min.jsx');
 
         assume(file.compressed).is.a('string');
         assume(file.content).is.a('string');
@@ -184,7 +183,7 @@ describe('Application routes', function () {
           assume(Object.keys(cache)).to.have.length(2);
 
           for (const id of Object.keys(cache)) {
-            assume(cache[id]).to.equal(10);
+            assume(cache[id]).to.equal(3);
           }
 
           calledOnce = false;
@@ -205,68 +204,4 @@ describe('Application routes', function () {
     });
   });
 
-  describe('/cancel', function () {
-    it('accepts name and version parameters', function (done) {
-      createRequest('get', '/cancel/test/1.0.0', function (err, res) {
-        assume(err).to.be.falsey();
-        res.once('end', done);
-      }).on('data', function (data) {
-        assume(data).to.be.instanceof(Buffer);
-        assume(data.toString()).to.equal('build test@1.0.0 cancelled');
-      });
-    });
-
-    it('will cancel a running build for a specified environment', function (done) {
-      const data = getPayload(payload);
-      let called = false;
-
-      nockFeedme();
-      data.env = 'prod';
-
-      //
-      // Add locales to the payload
-      //
-      const pkg = app.construct.extractPackage(data);
-      pkg.locales = ['en-US', 'en-CA'];
-
-      const post = createRequest('post', 'build')
-        .on('data', function (resData) {
-          resData = JSON.parse(resData);
-
-          //
-          // Only try to cancel when the build is actually started
-          // not too soon, cutoff is arbitrary.
-          //
-          if (resData.progress < 20 || called) return;
-          called = true;
-
-          const child = app.construct.get(resData.id);
-          assume(app.construct.has(resData.id)).to.equal(true);
-          assume(child.spec).to.have.property('type', 'es6');
-          assume(child.spec).to.have.property('env', 'prod');
-          assume(child.spec).to.have.property('name', 'test');
-          assume(child.spec).to.have.property('version', '0.0.0');
-
-          createRequest('get', '/cancel/test/0.0.0/prod', function (err, res) {
-            assume(err).to.be.falsey();
-            //
-            // Ensure the build directory was cleaned.
-            //
-            res.once('end', function () {
-              fs.stat(path.join(app.config.get('builder').target, resData.id), function (err) {
-                assume(err).is.an('error');
-                assume(err.message).to.include('no such file or directory, stat');
-                assume(app.construct.has(resData.id)).to.equal(false);
-                done();
-              });
-            });
-          }).on('data', function (cancelData) {
-            assume(cancelData).to.be.instanceof(Buffer);
-            assume(cancelData.toString()).to.equal('build test@0.0.0 cancelled');
-          });
-        });
-
-      post.end(new Buffer(JSON.stringify(data)));
-    });
-  });
 });
