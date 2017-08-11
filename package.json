@@ -51,6 +51,7 @@
     "joi": "~6.7.1",
     "json-try-parse": "~1.0.0",
     "lodash.intersection": "~3.2.0",
+    "lodash.omit": "^4.5.0",
     "minimist": "~1.2.0",
     "minimize": "~1.7.0",
     "mkdirp": "^0.5.1",
@@ -72,7 +73,8 @@
     "walk": "~2.3.9",
     "warehouse-models": "^5.0.0",
     "webpack": "^1.12.12",
-    "winston": "^2.2.0"
+    "winston": "^2.2.0",
+    "workers-factory": "^1.4.1"
   },
   "devDependencies": {
     "assume": "^1.4.1",
