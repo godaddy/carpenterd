@@ -83,7 +83,7 @@ describe('Progress', function () {
   describe('#start', function () {
     it('is a function', function () {
       assume(progress.start).to.be.a('function');
-      assume(progress.start).to.have.length(1);
+      assume(progress.start).to.have.length(2);
     });
 
     it('writes default start object data to stream', function (done) {
@@ -174,9 +174,10 @@ describe('Progress', function () {
 
     it('returns the total progress for found ids', function () {
       progress.map.first = {};
+      progress.map.first.n = 3
       progress.map.first.total = 10;
 
-      assume(progress.state('first')).to.equal(10);
+      assume(progress.state('first')).to.equal(30);
       assume(progress.state('unknown')).to.equal(0);
     });
   });

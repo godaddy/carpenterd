@@ -6,7 +6,6 @@ describe('Constructor', function () {
   this.timeout(3E4);
 
   const Progress = require('../../../lib/constructor/progress');
-  const Gjallarhorn = require('gjallarhorn');
   const assume = require('assume');
   const path = require('path');
   const fs = require('fs');
@@ -31,17 +30,6 @@ describe('Constructor', function () {
       app = application;
       construct = app.construct;
 
-      //
-      // Push a fake child into gjallarhorn.
-      //
-      construct.horn.active.push({
-        id: 1,
-        spec: {
-          additional: 'specs',
-          id: uuid
-        }
-      });
-
       done(error);
     });
   });
@@ -52,8 +40,6 @@ describe('Constructor', function () {
 
   it('is exposed as singleton instance and wraps gjallarhorn child orchestration', function () {
     assume(construct).is.an('object');
-    assume(construct).to.have.property('horn');
-    assume(construct.horn).to.be.instanceof(Gjallarhorn);
   });
 
   it('has warehouse models reference', function () {
@@ -70,72 +56,6 @@ describe('Constructor', function () {
     it('checks the validatity of an uuid v4', function () {
       assume(construct.valid('87e29af5-094f-48fd-bafa-42e59f88c472')).to.equal(true);
       assume(construct.valid('1')).to.equal(false);
-    });
-  });
-
-  describe('#get', function () {
-    it('is a function', function () {
-      assume(construct.get).to.be.a('function');
-      assume(construct.get).to.have.length(1);
-    });
-
-    it('retrieves the child process by uuid', function () {
-      const result = construct.get(uuid);
-
-      assume(result).to.be.an('object');
-      assume(result.spec).to.have.property('additional', 'specs');
-      assume(result).to.have.property('id', 1);
-    });
-  });
-
-  describe('#has', function () {
-    it('is a function', function () {
-      assume(construct.has).to.be.a('function');
-      assume(construct.has).to.have.length(1);
-    });
-
-    it('checks if the child process exists by uuiid', function () {
-      assume(construct.has(uuid)).to.equal(true);
-      assume(construct.has(1)).to.equal(false);
-    });
-  });
-
-  describe('#destroy', function () {
-    it('is a function', function () {
-      assume(construct.destroy).to.be.a('function');
-      assume(construct.destroy).to.have.length(4);
-    });
-
-    it('calls the clear method of gjallarhorn', function (done) {
-      construct.horn.clear = function stub(id) {
-        assume(id).to.equal(1);
-      };
-
-      construct.destroy({
-        name: 'check-clear',
-        version: '1.0.0',
-        env: 'test'
-      }, function (err) {
-        assume(err).to.be.falsey();
-        done();
-      });
-    });
-
-    it('ignores invalid uuid', function (done) {
-      let called = false;
-
-      construct.horn.clear = function stub() {
-        called = true;
-      };
-
-      construct.destroy({
-        name: 'invalid id',
-        version: '1.0.0',
-        env: 'test'
-      }, function () {
-        assume(called).to.equal(false);
-        done();
-      });
     });
   });
 
@@ -343,12 +263,6 @@ describe('Constructor', function () {
     });
   });
 
-  describe('#supervise', function () {
-    it('is a function');
-    it('returns a message handler for gjallarhorn');
-    it('emits events on the instance based on data');
-  });
-
   describe('#purge', function () {
     it('is a function', function () {
       assume(construct.purge).to.be.a('function');
@@ -382,14 +296,6 @@ describe('Constructor', function () {
   });
 
   describe('#build', function () {
-    before(function () {
-      construct.horn.launch = function (data, handler, next) {
-        assume(data).to.have.property('id');
-        assume(construct.valid(data.id)).to.equal(true);
-        next();
-      };
-    });
-
     it('is a function', function () {
       assume(construct.build).to.be.a('function');
       assume(construct.build).to.have.length(2);
@@ -437,7 +343,5 @@ describe('Constructor', function () {
       });
     });
 
-    it('provides a supervise message handler to gjallarhorn');
-    it('writes a start and end message to the progress stream');
   });
 });
