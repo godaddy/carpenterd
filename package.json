@@ -54,7 +54,7 @@
     "minimize": "~1.7.0",
     "mkdirp": "^0.5.1",
     "node-uuid": "~1.4.3",
-    "npm": "^3.10.10",
+    "npm": "^4.6.1",
     "object-assign": "~4.0.1",
     "one-time": "~0.0.4",
     "repair": "~0.1.0",
