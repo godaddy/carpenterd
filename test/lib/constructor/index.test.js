@@ -64,11 +64,11 @@ describe('Constructor', function () {
 
     function data() {
       return {
-        name: 'test',
-        type: 'something silly',
+        'name': 'test',
+        'type': 'something silly',
         'dist-tags': { latest: '1.0.0' },
-        env: 'staging',
-        versions: {
+        'env': 'staging',
+        'versions': {
           '1.0.0': {
             name: 'test',
             build: 'browserify',
@@ -140,7 +140,7 @@ describe('Constructor', function () {
         assume(result).to.have.property('entry', '/path/to/config.js');
 
         done();
-      })
+      });
     });
 
     it('will only supply paths to data.entry if the property matches a builder', function (done) {
@@ -167,7 +167,7 @@ describe('Constructor', function () {
   describe('#getLocales', function () {
     const localeData = {
       'dist-tags': { latest: '1.0.0' },
-      versions: {
+      'versions': {
         '1.0.0': {
           locales: ['en-GB', 'nl-NL', 'de-DE']
         }
@@ -191,7 +191,7 @@ describe('Constructor', function () {
     });
 
     it('defaults to en-US if no locale is specified', function (done) {
-      delete localeData.versions['1.0.0'].locales
+      delete localeData.versions['1.0.0'].locales;
 
       construct.getLocales(localeData, function (error, locales) {
         assume(error).to.be.falsey();
@@ -221,7 +221,7 @@ describe('Constructor', function () {
 
       construct.models.Package.get = function (name, cb) {
         cb(null, packages[name]);
-      }
+      };
 
       localeData.versions['1.0.0'].dependencies = {
         myPackage: 'some latest version',
@@ -251,7 +251,7 @@ describe('Constructor', function () {
     it('extracts the package.json from the payload', function () {
       const pkg = construct.extractPackage({
         'dist-tags': { latest: '1.0.0' },
-        versions: {
+        'versions': {
           '1.0.0': {
             name: 'test'
           }
@@ -303,8 +303,8 @@ describe('Constructor', function () {
 
     it('launches a build process and returns a progress stream', function () {
       assume(construct.build({
-        name: 'test',
-        versions: {
+        'name': 'test',
+        'versions': {
           '1.0.0': {
             name: 'test',
             keywords: [
@@ -320,11 +320,11 @@ describe('Constructor', function () {
 
     it('returns early if the package.json has a build flag that is set to false', function (done) {
       const progress = construct.build({
-        name: 'test',
+        'name': 'test',
         'dist-tags': {
           latest: '1.0.0'
         },
-        versions: {
+        'versions': {
           '1.0.0': {
             build: false
           }

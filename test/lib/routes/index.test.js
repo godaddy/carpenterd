@@ -19,7 +19,7 @@ describe('Application routes', function () {
   this.timeout(5E5); // eslint-disable-line
 
   const payload = path.join(__dirname, '..', '..', 'fixtures', 'payload-0.0.0.json');
-  const configFile = path.join(__dirname, '..', '..', 'config.json')
+  const configFile = path.join(__dirname, '..', '..', 'config.json');
   function getPayload(filepath) {
     return JSON.parse(fs.readFileSync(filepath)); // eslint-disable-line
   }

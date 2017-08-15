@@ -10,10 +10,8 @@
     "start": "bin/server",
     "test": "istanbul cover _mocha -- --reporter spec $(find test -path test/fixtures -prune -o -name '*.test.js')",
     "watch": "mocha --watch --reporter spec $(find test -path test/fixtures -prune -o -name '*.test.js')",
-    "eslint": "godaddy-js-style-eslint -c .eslintrc lib/ test/lib/",
-    "jscs": "godaddy-js-style-jscs lib/ test/lib/",
-    "lint": "npm run jscs && npm run eslint",
-    "pretest": "npm run lint"
+    "eslint": "eslint-godaddy -c .eslintrc lib/ test/lib/",
+    "pretest": "npm run eslint"
   },
   "repository": {
     "type": "git",
@@ -77,10 +75,10 @@
   "devDependencies": {
     "assume": "^1.4.1",
     "babel-eslint": "^6.1.2",
-    "eslint-plugin-json": "~1.2.0",
-    "eslint-plugin-mocha": "~2.0.0",
-    "eslint-plugin-react": "~4.2.0",
-    "godaddy-style": "^3.1.6",
+    "eslint": "^4.4.1",
+    "eslint-config-godaddy": "^2.0.0",
+    "eslint-plugin-json": "^1.2.0",
+    "eslint-plugin-mocha": "^4.11.0",
     "hyperquest": "~1.2.0",
     "istanbul": "~0.4.5",
     "mocha": "~3.1.0",
