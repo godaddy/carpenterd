@@ -174,7 +174,7 @@ describe('Progress', function () {
 
     it('returns the total progress for found ids', function () {
       progress.map.first = {};
-      progress.map.first.n = 3
+      progress.map.first.n = 3;
       progress.map.first.total = 10;
 
       assume(progress.state('first')).to.equal(30);
