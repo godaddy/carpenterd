@@ -153,7 +153,7 @@ describe('Progress', function () {
   describe('#end', function () {
     it('is a function', function () {
       assume(progress.end).to.be.a('function');
-      assume(progress.end).to.have.length(0);
+      assume(progress.end).to.have.length(1);
     });
 
     it('ends the stream', function () {
