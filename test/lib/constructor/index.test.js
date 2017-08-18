@@ -276,7 +276,7 @@ describe('Constructor', function () {
       fs.mkdir(path.join(config.target, uuid), function (error) {
         if (error) return done(error);
 
-        construct.app.config.set('builder:timeout', -1);
+        construct.timeout = -1;
         construct.purge();
 
         return construct.once('purge', function (err, n) {
@@ -286,7 +286,7 @@ describe('Constructor', function () {
           fs.readdir(config.target, function (e, files) {
             assume(e).to.be.falsey();
             assume(files.filter(construct.valid)).to.have.length(0);
-            construct.app.config.set('builder:timeout', timeout);
+            construct.timeout = timeout;
 
             done();
           });
