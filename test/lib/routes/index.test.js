@@ -8,6 +8,7 @@ const nock = require('nock');
 const url = require('url');
 const fs = require('fs');
 const sinon = require('sinon');
+const Writer = require('../../mocks').Writer;
 
 const Agent = require('http').Agent;
 
@@ -42,10 +43,7 @@ describe('Application routes', function () {
       });
   }
 
-  function Writer() {}
-  Writer.prototype.publish = function (topic, payload, fn) {
-    setImmediate(fn);
-  };
+
 
   before(function (done) {
     app.start({

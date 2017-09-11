@@ -2,6 +2,8 @@
 /* eslint no-invalid-this: 0 */
 'use strict';
 
+const Writer = require('../../mocks').Writer;
+
 describe('Constructor', function () {
   this.timeout(3E4);
 
@@ -28,6 +30,8 @@ describe('Constructor', function () {
       }
     }, function (error, application) {
       app = application;
+      app.construct.nsq = app.construct.nsq || {};
+      app.construct.nsq.writer = app.construct.nsq.writer || new Writer();
       construct = app.construct;
 
       done(error);
@@ -159,6 +163,22 @@ describe('Constructor', function () {
         assume(result).to.have.property('name', 'test');
         assume(result).to.have.property('entry');
 
+        done();
+      });
+    });
+  });
+
+  describe('#buildOne', function () {
+    it('should run buildOne and succeed', function (done) {
+      const spec = {
+        name: 'test',
+        version: '1.0.0',
+        env: 'dev',
+        type: 'webpack'
+      };
+
+      construct.buildOne(spec, function (err) {
+        assume(err).is.falsey();
         done();
       });
     });
