@@ -5,7 +5,6 @@ const hyperquest = require('hyperquest');
 const assume = require('assume');
 const path = require('path');
 const nock = require('nock');
-const zlib = require('zlib');
 const url = require('url');
 const fs = require('fs');
 const sinon = require('sinon');
@@ -153,7 +152,7 @@ describe('Application routes', function () {
         assume(topic.equals('build'));
         assume(spy.called);
         assume(spec.name).equals(data.name);
-        assue(spec.env).equals(data.env);
+        assume(spec.env).equals(data.env);
         assume(spec.type);
         assume(spec.version);
         done();
