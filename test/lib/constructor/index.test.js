@@ -184,6 +184,19 @@ describe('Constructor', function () {
     });
   });
 
+  describe('#_buildError', function () {
+    it('should execte _buildError and succeed', function () {
+      const spec = {
+        name: 'test',
+        version: '1.0.0',
+        env: 'dev',
+        type: 'webpack'
+      };
+
+      construct._buildError(new Error('whatever'), spec);
+    });
+  });
+
   describe('#getLocales', function () {
     const localeData = {
       'dist-tags': { latest: '1.0.0' },
