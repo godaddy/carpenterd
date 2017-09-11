@@ -70,6 +70,7 @@ describe('Application routes', function () {
       app = appInstance;
       app.nsq = app.nsq || {};
       app.nsq.writer = app.nsq.writer || new Writer();
+      app.construct.nsq = app.nsq;
       done(error);
     });
   });
@@ -148,14 +149,14 @@ describe('Application routes', function () {
 
       post.end(new Buffer(JSON.stringify(data)));
 
-      app.construct.on('queued', function (topic, spec) {
-        assume(topic.equals('build'));
+      app.construct.once('queued', function (topic, spec) {
+        assume(topic).equals('build');
         assume(spy.called);
         assume(spec.name).equals(data.name);
         assume(spec.env).equals(data.env);
         assume(spec.type);
         assume(spec.version);
-        done();
+        spy.restore();
       });
     });
 
@@ -173,7 +174,6 @@ describe('Application routes', function () {
           resData = JSON.parse(resData);
           assume(resData).to.have.property('id');
           assume(app.construct.valid(resData.id)).to.equal(true);
-          console.dir(resData);
           if (!cache[resData.id]) cache[resData.id] = 0;
           cache[resData.id]++;
         })
