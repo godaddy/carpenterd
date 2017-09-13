@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "bin/server",
-    "test": "istanbul cover _mocha -- --reporter spec $(find test -path test/fixtures -prune -o -name '*.test.js')",
+    "test": "istanbul cover _mocha $(find test -path test/fixtures -prune -o -name '*.test.js')",
     "watch": "mocha --watch --reporter spec $(find test -path test/fixtures -prune -o -name '*.test.js')",
     "eslint": "eslint-godaddy -c .eslintrc lib/ test/lib/",
     "pretest": "npm run eslint"
@@ -53,6 +53,7 @@
     "mkdirp": "^0.5.1",
     "node-uuid": "~1.4.3",
     "npm": "^3.10.10",
+    "nsq.js-k8": "^1.0.3",
     "object-assign": "~4.0.1",
     "one-time": "~0.0.4",
     "repair": "~0.1.0",
@@ -70,8 +71,7 @@
     "walk": "~2.3.9",
     "warehouse-models": "^5.0.0",
     "webpack": "^1.12.12",
-    "winston": "^2.2.0",
-    "workers-factory": "^1.5.0"
+    "winston": "^2.2.0"
   },
   "devDependencies": {
     "assume": "^1.4.1",
@@ -83,6 +83,7 @@
     "hyperquest": "~1.2.0",
     "istanbul": "~0.4.5",
     "mocha": "~3.1.0",
-    "nock": "2.10.0"
+    "nock": "2.10.0",
+    "sinon": "^3.2.1"
   }
 }

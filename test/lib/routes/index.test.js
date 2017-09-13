@@ -5,9 +5,10 @@ const hyperquest = require('hyperquest');
 const assume = require('assume');
 const path = require('path');
 const nock = require('nock');
-const zlib = require('zlib');
 const url = require('url');
 const fs = require('fs');
+const sinon = require('sinon');
+const Writer = require('../../mocks').Writer;
 
 const Agent = require('http').Agent;
 
@@ -42,6 +43,8 @@ describe('Application routes', function () {
       });
   }
 
+
+
   before(function (done) {
     app.start({
       logger: {
@@ -55,11 +58,17 @@ describe('Application routes', function () {
             hostname: '127.0.0.1',
             port: 0,
             timeout: 12000000
+          },
+          builder: {
+            topic: 'build'
           }
         }
       }
     }, function (error, appInstance) {
       app = appInstance;
+      app.nsq = app.nsq || {};
+      app.nsq.writer = app.nsq.writer || new Writer();
+      app.construct.nsq = app.nsq;
       done(error);
     });
   });
@@ -127,7 +136,7 @@ describe('Application routes', function () {
 
     it('can create minified builds', function (done) {
       const data = getPayload(payload);
-
+      const spy = sinon.spy(app.construct.nsq.writer, 'publish');
       nockFeedme();
       data.env = 'prod';
 
@@ -138,25 +147,14 @@ describe('Application routes', function () {
 
       post.end(new Buffer(JSON.stringify(data)));
 
-      app.construct.once('store', function store(spec, progress, files) {
-        const file = files.files.find(file => file.filename === 'index.min.jsx');
-
-        assume(file.compressed).is.a('string');
-        assume(file.content).is.a('string');
-
-        const output = fs.readFileSync(file.content, 'utf8'); // eslint-disable-line no-sync
-        const compressed = fs.readFileSync(file.compressed); // eslint-disable-line no-sync
-
-        assume(output).to.include(
-          'value:function(){return _react.React.createElement("p",null,"Browserify'
-        );
-
-        // test for gzip header magic numbers and deflate compression
-        assume(compressed[0]).to.equal(31);
-        assume(compressed[1]).to.equal(139);
-        assume(compressed[2]).to.equal(8);
-
-        assume(zlib.gunzipSync(compressed).toString('utf-8')).to.equal(output); // eslint-disable-line
+      app.construct.once('queued', function (topic, spec) {
+        assume(topic).equals('build');
+        assume(spy.called);
+        assume(spec.name).equals(data.name);
+        assume(spec.env).equals(data.env);
+        assume(spec.type);
+        assume(spec.version);
+        spy.restore();
       });
     });
 
@@ -174,7 +172,6 @@ describe('Application routes', function () {
           resData = JSON.parse(resData);
           assume(resData).to.have.property('id');
           assume(app.construct.valid(resData.id)).to.equal(true);
-
           if (!cache[resData.id]) cache[resData.id] = 0;
           cache[resData.id]++;
         })
