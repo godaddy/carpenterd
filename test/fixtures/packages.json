@@ -1,0 +1,13 @@
+[{
+  "name": "my-client-side-package",
+  "version": "6.7.0",
+  "extended": {
+    "build": "webpack"
+  }
+}, {
+  "name": "my-other-client-side-package",
+  "version": "3.4.5",
+  "extended": {
+    "build": "webpack"
+  }
+}]
