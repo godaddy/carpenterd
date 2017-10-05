@@ -55,6 +55,7 @@
     "mkdirp": "^0.5.1",
     "node-uuid": "~1.4.3",
     "npm": "^3.10.10",
+    "nsq-stream": "^2.1.0",
     "nsq.js-k8": "^1.0.3",
     "object-assign": "~4.0.1",
     "one-time": "~0.0.4",
