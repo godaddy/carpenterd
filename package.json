@@ -76,7 +76,7 @@
     "winston": "^2.2.0"
   },
   "devDependencies": {
-    "assume": "^1.4.1",
+    "assume": "^1.5.2",
     "babel-eslint": "^6.1.2",
     "eslint": "^4.4.1",
     "eslint-config-godaddy": "^2.0.0",
