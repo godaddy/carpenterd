@@ -63,7 +63,7 @@ describe('Scheduler', function () {
     scheduler.once('scheduled', (err, counts) => {
       assume(err).is.falsey();
       const keys = Object.keys(counts);
-      assume(keys.length).equals(2);
+      assume(keys).length(2);
       keys.forEach(k => {
         assume(counts[k]).equals(0);
       });
@@ -77,9 +77,9 @@ describe('Scheduler', function () {
     scheduler.setInterval('test');
     scheduler.setInterval('prod');
     scheduler.setInterval('dev');
-    assume(Array.from(scheduler.intervals.keys()).length).equals(3);
+    assume(Array.from(scheduler.intervals.keys())).length(3);
     scheduler.clear();
-    assume(Array.from(scheduler.intervals.keys()).length).equals(0);
+    assume(Array.from(scheduler.intervals.keys())).length(0);
   });
 
   it('should trigger a single build for each package when running schedule', function (done) {
@@ -91,7 +91,7 @@ describe('Scheduler', function () {
     scheduler.schedule('test', function (err, counts) {
       assume(err).is.falsey();
       const keys = Object.keys(counts);
-      assume(keys.length).equals(2);
+      assume(keys).length(2);
       keys.forEach(k => {
         assume(counts[k]).equals(1);
       });
@@ -108,7 +108,7 @@ describe('Scheduler', function () {
     scheduler.schedule('test', function (err, counts) {
       assume(err).is.falsey();
       const keys = Object.keys(counts);
-      assume(keys.length).equals(2);
+      assume(keys).length(2);
       keys.forEach(k => {
         assume(counts[k]).equals(0);
       });
