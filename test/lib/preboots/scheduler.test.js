@@ -61,6 +61,7 @@ describe('Scheduler', function () {
     headStub.onCall(1).yieldsAsync(null, clone(heads.same['my-other-client-side-package']));
 
     scheduler.once('scheduled', (err, counts) => {
+      assume(err).is.falsey();
       const keys = Object.keys(counts);
       assume(keys.length).equals(2);
       keys.forEach(k => {
