@@ -8,7 +8,7 @@
   "logger": { "silent": true },
   "npm": {
     "registry": "https://registry.npmjs.org",
-    "loglevel": "warn"
+    "loglevel": "http"
   },
   "json": {
     "limit": "100mb",
