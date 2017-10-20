@@ -53,7 +53,7 @@
     "minimize": "~1.7.0",
     "mkdirp": "^0.5.1",
     "node-uuid": "~1.4.3",
-    "npm": "^3.10.10",
+    "npm": "^5.5.1",
     "nsq-stream": "^2.1.0",
     "nsq.js-k8": "^1.0.3",
     "object-assign": "~4.0.1",

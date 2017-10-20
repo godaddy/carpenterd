@@ -14,10 +14,11 @@ const Agent = require('http').Agent;
 
 const agent = new Agent({ keepAlive: true });
 
-let app = require('../../../lib/');
+const application = require('../../../lib/');
 
 describe('Application routes', function () {
   this.timeout(5E5); // eslint-disable-line
+  let app;
 
   const payload = path.join(__dirname, '..', '..', 'fixtures', 'payload-0.0.0.json');
   const configFile = path.join(__dirname, '..', '..', 'config.json');
@@ -43,10 +44,8 @@ describe('Application routes', function () {
       });
   }
 
-
-
   before(function (done) {
-    app.start({
+    application.start({
       logger: {
         level: 'critical'
       },
@@ -65,6 +64,7 @@ describe('Application routes', function () {
         }
       }
     }, function (error, appInstance) {
+      if (error) return done(error);
       app = appInstance;
       app.nsq = app.nsq || {};
       app.nsq.writer = app.nsq.writer || new Writer();
