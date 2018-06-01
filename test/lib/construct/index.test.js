@@ -4,6 +4,7 @@
 'use strict';
 
 const Writer = require('../../mocks').Writer;
+const sinon = require('sinon');
 
 describe('Construct', function () {
   this.timeout(3E4);
@@ -13,6 +14,7 @@ describe('Construct', function () {
   const path = require('path');
   const fs = require('fs');
   const uuid = '87e29af5-094f-48fd-bafa-42e59f88c472';
+  assume.use(require('assume-sinon'));
 
   let app = require('../../../lib');
   let construct;
@@ -41,6 +43,9 @@ describe('Construct', function () {
 
   after(function (done) {
     app.close(done);
+  });
+  afterEach(function () {
+    sinon.restore();
   });
 
   it('is exposed as singleton instance and wraps gjallarhorn child orchestration', function () {
@@ -336,7 +341,8 @@ describe('Construct', function () {
     });
 
     it('launches a build process and returns a progress stream', function (done) {
-      assume(construct.build({
+      const prepareStub = sinon.stub(Object.getPrototypeOf(construct), 'prepare').callsArgWithAsync(2, null, {});
+      const progress = construct.build({
         'name': 'test',
         'versions': {
           '1.0.0': {
@@ -351,8 +357,11 @@ describe('Construct', function () {
         }
       }, function (error) {
         assume(error).to.be.falsey();
+        assume(prepareStub).is.called(1);
         done();
-      })).to.be.instanceof(Progress);
+      });
+
+      assume(progress).to.be.instanceof(Progress);
     });
 
     it('returns early if the package.json has a build flag that is set to false', function (done) {

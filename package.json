@@ -79,6 +79,7 @@
   },
   "devDependencies": {
     "assume": "^1.5.2",
+    "assume-sinon": "^1.0.0",
     "babel-eslint": "^6.1.2",
     "eslint": "^4.4.1",
     "eslint-config-godaddy": "^2.0.0",
@@ -88,6 +89,6 @@
     "mocha": "^5.2.0",
     "nock": "2.10.0",
     "nyc": "^11.8.0",
-    "sinon": "^3.2.1"
+    "sinon": "^5.0.10"
   }
 }
