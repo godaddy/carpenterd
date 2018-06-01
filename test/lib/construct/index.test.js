@@ -1,13 +1,14 @@
 /* eslint max-nested-callbacks: 0 */
 /* eslint no-invalid-this: 0 */
+/* eslint max-statements: 0 */
 'use strict';
 
 const Writer = require('../../mocks').Writer;
 
-describe('Constructor', function () {
+describe('Construct', function () {
   this.timeout(3E4);
 
-  const Progress = require('../../../lib/constructor/progress');
+  const Progress = require('../../../lib/construct/progress');
   const assume = require('assume');
   const path = require('path');
   const fs = require('fs');
@@ -334,7 +335,7 @@ describe('Constructor', function () {
       assume(construct.build).to.have.length(2);
     });
 
-    it('launches a build process and returns a progress stream', function () {
+    it('launches a build process and returns a progress stream', function (done) {
       assume(construct.build({
         'name': 'test',
         'versions': {
@@ -348,6 +349,9 @@ describe('Constructor', function () {
         'dist-tags': {
           latest: '1.0.0'
         }
+      }, function (error) {
+        assume(error).to.be.falsey();
+        done();
       })).to.be.instanceof(Progress);
     });
 

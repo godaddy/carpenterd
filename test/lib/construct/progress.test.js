@@ -1,7 +1,7 @@
 'use strict';
 
 describe('Progress', function () {
-  const Progress = require('../../../lib/constructor/progress');
+  const Progress = require('../../../lib/construct/progress');
   const uuid = '87e29af5-094f-48fd-bafa-42e59f88c472';
   const Stream = require('stream');
   const assume = require('assume');
