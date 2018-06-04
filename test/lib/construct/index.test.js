@@ -53,6 +53,36 @@ describe('Construct', function () {
     sinon.restore();
   });
 
+  function assertNsqLocaleProgress(writerSpy, locale, buildType) {
+    const commonPayload = {
+      name: 'test',
+      env: 'dev',
+      buildType,
+      locale
+    };
+
+    assume(writerSpy).is.calledWithMatch(statusTopic, {
+      ...commonPayload,
+      eventType: 'event',
+      message: sinon.match(`{"locale":"${locale}","event":"task","message":"start","progress":0,"id":"`)
+    });
+    assume(writerSpy).is.calledWithMatch(statusTopic, {
+      ...commonPayload,
+      eventType: 'event',
+      message: sinon.match(`{"locale":"${locale}","progress":50,"message":"Queuing ${buildType} build test","id":"`)
+    });
+    assume(writerSpy).is.calledWithMatch(statusTopic, {
+      ...commonPayload,
+      eventType: 'event',
+      message: sinon.match(`{"locale":"${locale}","event":"task","message":"finished","progress":100,"id":"`)
+    });
+
+    assume(writerSpy).is.calledWithMatch(queueingTopic, {
+      ...rip(commonPayload, 'buildType'),
+      type: commonPayload.buildType
+    });
+  }
+
   it('is exposed as singleton instance and wraps gjallarhorn child orchestration', function () {
     assume(construct).is.an('object');
   });
@@ -192,6 +222,40 @@ describe('Construct', function () {
         assume(err).is.falsey();
         done();
       });
+    });
+
+    it('writes out the expected nsq messages', function (done) {
+      const writerSpy = sinon.spy(construct.nsq.writer, 'publish');
+      const progress = construct.buildOne({
+        name: 'test',
+        version: '1.0.0',
+        env: 'dev',
+        type: 'webpack',
+        locale: 'en-LOL'
+      }, function (error) {
+        assume(error).to.be.falsey();
+
+        // We end the work as soon as everything is queued, even though we may still end up doing a bit more
+        setTimeout(() => {
+          // start, progress, finished, and actual queueing + progress end
+          assume(writerSpy).is.called(5);
+
+          assertNsqLocaleProgress(writerSpy, 'en-LOL', 'webpack');
+
+          assume(writerSpy).is.calledWithMatch(statusTopic, {
+            eventType: 'queued',
+            name: 'test',
+            env: 'dev',
+            buildType: 'webpack',
+            total: 1,
+            message: 'Builds Queued'
+          });
+
+          done();
+        }, 100);
+      });
+
+      assume(progress).to.be.instanceof(Progress);
     });
   });
 
@@ -421,38 +485,8 @@ describe('Construct', function () {
           // start, progress, finished, and actual queueing per locale (en-LOL, not-REAL) and progress end
           assume(writerSpy).is.called(9);
 
-          function assertLocaleProgress(locale) {
-            const commonPayload = {
-              name: 'test',
-              env: 'dev',
-              buildType: 'es6',
-              locale
-            };
-
-            assume(writerSpy).is.calledWithMatch(statusTopic, {
-              ...commonPayload,
-              eventType: 'event',
-              message: sinon.match(`{"locale":"${locale}","event":"task","message":"start","progress":0,"id":"`)
-            });
-            assume(writerSpy).is.calledWithMatch(statusTopic, {
-              ...commonPayload,
-              eventType: 'event',
-              message: sinon.match(`{"locale":"${locale}","progress":50,"message":"Queuing es6 build test","id":"`)
-            });
-            assume(writerSpy).is.calledWithMatch(statusTopic, {
-              ...commonPayload,
-              eventType: 'event',
-              message: sinon.match(`{"locale":"${locale}","event":"task","message":"finished","progress":100,"id":"`)
-            });
-
-            assume(writerSpy).is.calledWithMatch(queueingTopic, {
-              ...rip(commonPayload, 'buildType'),
-              type: commonPayload.buildType
-            });
-          }
-
-          assertLocaleProgress('en-LOL');
-          assertLocaleProgress('not-REAL');
+          assertNsqLocaleProgress(writerSpy, 'en-LOL', 'es6');
+          assertNsqLocaleProgress(writerSpy, 'not-REAL', 'es6');
 
           assume(writerSpy).is.calledWithMatch(statusTopic, {
             eventType: 'queued',
