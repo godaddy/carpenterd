@@ -13,9 +13,12 @@ describe('Construct', function () {
   const assume = require('assume');
   const path = require('path');
   const fs = require('fs');
+  const rip = require('rip-out');
   const uuid = '87e29af5-094f-48fd-bafa-42e59f88c472';
   assume.use(require('assume-sinon'));
 
+  const statusTopic = 'some-status-topic';
+  const queueingTopic = 'queue-the-build';
   let app = require('../../../lib');
   let construct;
 
@@ -35,6 +38,8 @@ describe('Construct', function () {
       app = application;
       app.construct.nsq = app.construct.nsq || {};
       app.construct.nsq.writer = app.construct.nsq.writer || new Writer();
+      app.construct.statusTopic = statusTopic;
+      app.construct.topic = queueingTopic;
       construct = app.construct;
 
       done(error);
@@ -389,5 +394,80 @@ describe('Construct', function () {
       });
     });
 
+    it('writes out the expected nsq messages', function (done) {
+      const writerSpy = sinon.spy(construct.nsq.writer, 'publish');
+      const constructProto = Object.getPrototypeOf(construct);
+      const prepareStub = sinon.stub(constructProto, 'prepare').callsArgWithAsync(2, null, {});
+      const getLocalesStub = sinon.stub(constructProto, 'getLocales').callsArgWithAsync(1, null, ['en-LOL', 'not-REAL']);
+      const progress = construct.build({
+        'name': 'test',
+        'versions': {
+          '1.0.0': {
+            name: 'test',
+            keywords: [
+              'es6'
+            ]
+          }
+        },
+        'dist-tags': {
+          latest: '1.0.0'
+        }
+      }, function (error) {
+        assume(error).to.be.falsey();
+        assume(prepareStub).is.called(1);
+        assume(getLocalesStub).is.called(1);
+        // We end the work as soon as everything is queued, even though we may still end up doing a bit more
+        setTimeout(() => {
+          // start, progress, finished, and actual queueing per locale (en-LOL, not-REAL) and progress end
+          assume(writerSpy).is.called(9);
+
+          function assertLocaleProgress(locale) {
+            const commonPayload = {
+              name: 'test',
+              env: 'dev',
+              buildType: 'es6',
+              locale
+            };
+
+            assume(writerSpy).is.calledWithMatch(statusTopic, {
+              ...commonPayload,
+              eventType: 'event',
+              message: sinon.match(`{"locale":"${locale}","event":"task","message":"start","progress":0,"id":"`)
+            });
+            assume(writerSpy).is.calledWithMatch(statusTopic, {
+              ...commonPayload,
+              eventType: 'event',
+              message: sinon.match(`{"locale":"${locale}","progress":50,"message":"Queuing es6 build test","id":"`)
+            });
+            assume(writerSpy).is.calledWithMatch(statusTopic, {
+              ...commonPayload,
+              eventType: 'event',
+              message: sinon.match(`{"locale":"${locale}","event":"task","message":"finished","progress":100,"id":"`)
+            });
+
+            assume(writerSpy).is.calledWithMatch(queueingTopic, {
+              ...rip(commonPayload, 'buildType'),
+              type: commonPayload.buildType
+            });
+          }
+
+          assertLocaleProgress('en-LOL');
+          assertLocaleProgress('not-REAL');
+
+          assume(writerSpy).is.calledWithMatch(statusTopic, {
+            eventType: 'queued',
+            name: 'test',
+            env: 'dev',
+            buildType: 'es6',
+            total: 2,
+            message: 'Builds Queued'
+          });
+
+          done();
+        }, 100);
+      });
+
+      assume(progress).to.be.instanceof(Progress);
+    });
   });
 });
