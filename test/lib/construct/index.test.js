@@ -64,17 +64,17 @@ describe('Construct', function () {
     assume(writerSpy).is.calledWithMatch(statusTopic, {
       ...commonPayload,
       eventType: 'event',
-      message: sinon.match(`{"locale":"${locale}","event":"task","message":"start","progress":0,"id":"`)
+      message: sinon.match('start\nProgress: 0')
     });
     assume(writerSpy).is.calledWithMatch(statusTopic, {
       ...commonPayload,
       eventType: 'event',
-      message: sinon.match(`{"locale":"${locale}","progress":50,"message":"Queuing ${buildType} build test","id":"`)
+      message: sinon.match(`Queuing ${buildType} build test\nProgress: 50`)
     });
     assume(writerSpy).is.calledWithMatch(statusTopic, {
       ...commonPayload,
       eventType: 'event',
-      message: sinon.match(`{"locale":"${locale}","event":"task","message":"finished","progress":100,"id":"`)
+      message: sinon.match('finished\nProgress: 100')
     });
 
     assume(writerSpy).is.calledWithMatch(queueingTopic, {
@@ -410,7 +410,7 @@ describe('Construct', function () {
     });
 
     it('launches a build process and returns a progress stream', function (done) {
-      const prepareStub = sinon.stub(Object.getPrototypeOf(construct), 'prepare').callsArgWithAsync(2, null, {});
+      const prepareStub = sinon.stub(Object.getPrototypeOf(construct), 'prepare').callsArgWithAsync(3, null, {});
       const progress = construct.build({
         'name': 'test',
         'versions': {
@@ -461,7 +461,7 @@ describe('Construct', function () {
     it('writes out the expected nsq messages', function (done) {
       const writerSpy = sinon.spy(construct.nsq.writer, 'publish');
       const constructProto = Object.getPrototypeOf(construct);
-      const prepareStub = sinon.stub(constructProto, 'prepare').callsArgWithAsync(2, null, {});
+      const prepareStub = sinon.stub(constructProto, 'prepare').callsArgWithAsync(3, null, {});
       const getLocalesStub = sinon.stub(constructProto, 'getLocales').callsArgWithAsync(1, null, ['en-LOL', 'not-REAL']);
       const progress = construct.build({
         'name': 'test',

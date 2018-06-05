@@ -190,6 +190,46 @@ test = ['dist/js/app.js', 'dist/css/app.css']
 dev = ['dist/js/app.js', 'dist/css/app.css'];
 ```
 
+### Status-Api
+
+Carpenterd supports posting messages to the [warehouse.ai] status-api via NSQ.
+It will post messages to the nsq topic configured at:
+
+```js
+{
+  // ...other configuration
+  "nsq": {
+    "statusTopic": "an-nsq-topic", // topic that you choose for the status-api to consume
+    // ...other nsq setup
+  },
+  // ...other configuration
+}
+```
+
+The NSQ payloads will be object that take the form:
+
+```js
+{
+    eventType: "event|queued|error|ignored", // The type of status event that occurred
+    name: "package-name",
+    env: "dev", // The environment that is being built
+    version: "1.2.3", // The version of the build
+    locale: "en-US", // (Optional) The locale that is being built
+    buildType: "webpack", // The type of the build (typically just webpack)
+    total: 5, // (Optional) The number of builds that were queued
+    message: "Description of what happened"
+  }
+```
+
+#### Event Types
+
+In the status-api NSQ payload there is a field called `eventType`. The possible values that carpenterd will send are:
+
+- `event` - Used for interim statuses that a user might care about, but doesn't affect/progress the overall build status
+- `queued` - Used to indicated how many builds were queued with `carpenter-worker`
+- `error` - Used to indicate that `carpenterd` encountered an error and wasn't able to queue all the builds
+- `ignored` - Used to indicate that the build was ignored and no builds were queued.  Typically this is because the package was not configured to have a build or was set to not build.
+
 ## License
 MIT
 

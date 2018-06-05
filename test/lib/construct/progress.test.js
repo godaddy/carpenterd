@@ -129,7 +129,7 @@ describe('Progress', function () {
       nsqProgress.start(uuid, 2, { locale: nsqExpected.locale });
       assume(writerSpy).is.calledWithMatch(nsqTopic, {
         eventType: 'event',
-        message: sinon.match(`{"locale":"${nsqExpected.locale}","event":"task","message":"start","progress":0,"id":"${uuid}"`),
+        message: sinon.match(`start\nProgress: 0`),
         ...nsqExpected
       });
     });
@@ -155,7 +155,7 @@ describe('Progress', function () {
       nsqProgress.done(uuid, { locale: nsqExpected.locale });
       assume(writerSpy).is.calledWithMatch(nsqTopic, {
         eventType: 'event',
-        message: sinon.match(`{"locale":"${nsqExpected.locale}","event":"task","message":"finished","progress":100,"id":"${uuid}"`),
+        message: sinon.match(`finished\nProgress: 100`),
         ...nsqExpected
       });
     });
@@ -225,7 +225,7 @@ describe('Progress', function () {
     });
 
     it('writes end event to nsq stream', function () {
-      nsqProgress.buildsCompleted = 7;
+      nsqProgress.statusWriter.buildsCompleted = 7;
       nsqProgress.end();
 
       assume(writerSpy).is.calledWithMatch(nsqTopic, {
@@ -237,7 +237,7 @@ describe('Progress', function () {
     });
 
     it('writes end event with error to nsq stream', function () {
-      nsqProgress.buildsCompleted = 1;
+      nsqProgress.statusWriter.buildsCompleted = 1;
       const errorMessage = 'printer on fire';
       nsqProgress.end(new Error(errorMessage));
 
