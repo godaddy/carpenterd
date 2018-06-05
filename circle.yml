@@ -4,4 +4,4 @@ machine:
     - redis
 
   node:
-    version: 6
+    version: 8
