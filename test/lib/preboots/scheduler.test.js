@@ -12,7 +12,6 @@ const path = require('path');
 describe('Scheduler', function () {
   this.timeout(5E4);
   let app = require('../../../lib');
-  let sandbox;
   let scheduler;
 
   before(function (done) {
@@ -46,17 +45,13 @@ describe('Scheduler', function () {
     app.close(done);
   });
 
-  beforeEach(function () {
-    sandbox = sinon.sandbox.create();
-  });
-
   afterEach(function () {
-    sandbox.restore();
+    sinon.restore();
   });
 
   it('setInterval should schedule a job that completes', function (done) {
-    sandbox.stub(scheduler.models.PackageCache, 'findAll').yieldsAsync(null, clone(packages));
-    const headStub = sandbox.stub(scheduler.models.BuildHead, 'findAll');
+    sinon.stub(scheduler.models.PackageCache, 'findAll').yieldsAsync(null, clone(packages));
+    const headStub = sinon.stub(scheduler.models.BuildHead, 'findAll');
     headStub.onCall(0).yieldsAsync(null, clone(heads.same['my-client-side-package']));
     headStub.onCall(1).yieldsAsync(null, clone(heads.same['my-other-client-side-package']));
 
@@ -83,8 +78,8 @@ describe('Scheduler', function () {
   });
 
   it('should trigger a single build for each package when running schedule', function (done) {
-    sandbox.stub(scheduler.models.PackageCache, 'findAll').yieldsAsync(null, clone(packages));
-    const headStub = sandbox.stub(scheduler.models.BuildHead, 'findAll');
+    sinon.stub(scheduler.models.PackageCache, 'findAll').yieldsAsync(null, clone(packages));
+    const headStub = sinon.stub(scheduler.models.BuildHead, 'findAll');
     headStub.onCall(0).yieldsAsync(null, clone(heads.missing['my-client-side-package']));
     headStub.onCall(1).yieldsAsync(null, clone(heads.missing['my-other-client-side-package']));
 
@@ -100,8 +95,8 @@ describe('Scheduler', function () {
   });
 
   it('should trigger zero builds when there are no behind packages', function (done) {
-    sandbox.stub(scheduler.models.PackageCache, 'findAll').yieldsAsync(null, clone(packages));
-    const headStub = sandbox.stub(scheduler.models.BuildHead, 'findAll');
+    sinon.stub(scheduler.models.PackageCache, 'findAll').yieldsAsync(null, clone(packages));
+    const headStub = sinon.stub(scheduler.models.BuildHead, 'findAll');
     headStub.onCall(0).yieldsAsync(null, clone(heads.same['my-client-side-package']));
     headStub.onCall(1).yieldsAsync(null, clone(heads.same['my-other-client-side-package']));
 

@@ -8,7 +8,9 @@
   },
   "scripts": {
     "start": "bin/server",
-    "test": "istanbul cover _mocha $(find test -path test/fixtures -prune -o -name '*.test.js')",
+    "report": "nyc report --reporter=lcov",
+    "test": "nyc npm run test:mocha",
+    "test:mocha": "mocha test/**/*.test.js",
     "watch": "mocha --watch --reporter spec $(find test -path test/fixtures -prune -o -name '*.test.js')",
     "eslint": "eslint-godaddy -c .eslintrc lib/ test/lib/",
     "pretest": "npm run eslint"
@@ -77,15 +79,17 @@
   },
   "devDependencies": {
     "assume": "^1.5.2",
+    "assume-sinon": "^1.0.0",
     "babel-eslint": "^6.1.2",
     "eslint": "^4.4.1",
     "eslint-config-godaddy": "^2.0.0",
     "eslint-plugin-json": "^1.2.0",
     "eslint-plugin-mocha": "^4.11.0",
     "hyperquest": "~1.2.0",
-    "istanbul": "~0.4.5",
-    "mocha": "~3.1.0",
+    "mocha": "^5.2.0",
     "nock": "2.10.0",
-    "sinon": "^3.2.1"
+    "nyc": "^11.8.0",
+    "rip-out": "^1.0.0",
+    "sinon": "^5.0.10"
   }
 }

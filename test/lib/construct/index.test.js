@@ -1,18 +1,24 @@
 /* eslint max-nested-callbacks: 0 */
 /* eslint no-invalid-this: 0 */
+/* eslint max-statements: 0 */
 'use strict';
 
 const Writer = require('../../mocks').Writer;
+const sinon = require('sinon');
 
-describe('Constructor', function () {
+describe('Construct', function () {
   this.timeout(3E4);
 
-  const Progress = require('../../../lib/constructor/progress');
+  const Progress = require('../../../lib/construct/progress');
   const assume = require('assume');
   const path = require('path');
   const fs = require('fs');
+  const rip = require('rip-out');
   const uuid = '87e29af5-094f-48fd-bafa-42e59f88c472';
+  assume.use(require('assume-sinon'));
 
+  const statusTopic = 'some-status-topic';
+  const queueingTopic = 'queue-the-build';
   let app = require('../../../lib');
   let construct;
 
@@ -32,6 +38,8 @@ describe('Constructor', function () {
       app = application;
       app.construct.nsq = app.construct.nsq || {};
       app.construct.nsq.writer = app.construct.nsq.writer || new Writer();
+      app.construct.statusTopic = statusTopic;
+      app.construct.topic = queueingTopic;
       construct = app.construct;
 
       done(error);
@@ -41,6 +49,39 @@ describe('Constructor', function () {
   after(function (done) {
     app.close(done);
   });
+  afterEach(function () {
+    sinon.restore();
+  });
+
+  function assertNsqLocaleProgress(writerSpy, locale, buildType) {
+    const commonPayload = {
+      name: 'test',
+      env: 'dev',
+      buildType,
+      locale
+    };
+
+    assume(writerSpy).is.calledWithMatch(statusTopic, {
+      ...commonPayload,
+      eventType: 'event',
+      message: sinon.match('start\nProgress: 0')
+    });
+    assume(writerSpy).is.calledWithMatch(statusTopic, {
+      ...commonPayload,
+      eventType: 'event',
+      message: sinon.match(`Queuing ${buildType} build test\nProgress: 50`)
+    });
+    assume(writerSpy).is.calledWithMatch(statusTopic, {
+      ...commonPayload,
+      eventType: 'event',
+      message: sinon.match('finished\nProgress: 100')
+    });
+
+    assume(writerSpy).is.calledWithMatch(queueingTopic, {
+      ...rip(commonPayload, 'buildType'),
+      type: commonPayload.buildType
+    });
+  }
 
   it('is exposed as singleton instance and wraps gjallarhorn child orchestration', function () {
     assume(construct).is.an('object');
@@ -181,6 +222,40 @@ describe('Constructor', function () {
         assume(err).is.falsey();
         done();
       });
+    });
+
+    it('writes out the expected nsq messages', function (done) {
+      const writerSpy = sinon.spy(construct.nsq.writer, 'publish');
+      const progress = construct.buildOne({
+        name: 'test',
+        version: '1.0.0',
+        env: 'dev',
+        type: 'webpack',
+        locale: 'en-LOL'
+      }, function (error) {
+        assume(error).to.be.falsey();
+
+        // We end the work as soon as everything is queued, even though we may still end up doing a bit more
+        setTimeout(() => {
+          // start, progress, finished, and actual queueing + progress end
+          assume(writerSpy).is.called(5);
+
+          assertNsqLocaleProgress(writerSpy, 'en-LOL', 'webpack');
+
+          assume(writerSpy).is.calledWithMatch(statusTopic, {
+            eventType: 'queued',
+            name: 'test',
+            env: 'dev',
+            buildType: 'webpack',
+            total: 1,
+            message: 'Builds Queued'
+          });
+
+          done();
+        }, 100);
+      });
+
+      assume(progress).to.be.instanceof(Progress);
     });
   });
 
@@ -334,8 +409,9 @@ describe('Constructor', function () {
       assume(construct.build).to.have.length(2);
     });
 
-    it('launches a build process and returns a progress stream', function () {
-      assume(construct.build({
+    it('launches a build process and returns a progress stream', function (done) {
+      const prepareStub = sinon.stub(Object.getPrototypeOf(construct), 'prepare').callsArgWithAsync(3, null, {});
+      const progress = construct.build({
         'name': 'test',
         'versions': {
           '1.0.0': {
@@ -348,7 +424,13 @@ describe('Constructor', function () {
         'dist-tags': {
           latest: '1.0.0'
         }
-      })).to.be.instanceof(Progress);
+      }, function (error) {
+        assume(error).to.be.falsey();
+        assume(prepareStub).is.called(1);
+        done();
+      });
+
+      assume(progress).to.be.instanceof(Progress);
     });
 
     it('returns early if the package.json has a build flag that is set to false', function (done) {
@@ -376,5 +458,50 @@ describe('Constructor', function () {
       });
     });
 
+    it('writes out the expected nsq messages', function (done) {
+      const writerSpy = sinon.spy(construct.nsq.writer, 'publish');
+      const constructProto = Object.getPrototypeOf(construct);
+      const prepareStub = sinon.stub(constructProto, 'prepare').callsArgWithAsync(3, null, {});
+      const getLocalesStub = sinon.stub(constructProto, 'getLocales').callsArgWithAsync(1, null, ['en-LOL', 'not-REAL']);
+      const progress = construct.build({
+        'name': 'test',
+        'versions': {
+          '1.0.0': {
+            name: 'test',
+            keywords: [
+              'es6'
+            ]
+          }
+        },
+        'dist-tags': {
+          latest: '1.0.0'
+        }
+      }, function (error) {
+        assume(error).to.be.falsey();
+        assume(prepareStub).is.called(1);
+        assume(getLocalesStub).is.called(1);
+        // We end the work as soon as everything is queued, even though we may still end up doing a bit more
+        setTimeout(() => {
+          // start, progress, finished, and actual queueing per locale (en-LOL, not-REAL) and progress end
+          assume(writerSpy).is.called(9);
+
+          assertNsqLocaleProgress(writerSpy, 'en-LOL', 'es6');
+          assertNsqLocaleProgress(writerSpy, 'not-REAL', 'es6');
+
+          assume(writerSpy).is.calledWithMatch(statusTopic, {
+            eventType: 'queued',
+            name: 'test',
+            env: 'dev',
+            buildType: 'es6',
+            total: 2,
+            message: 'Builds Queued'
+          });
+
+          done();
+        }, 100);
+      });
+
+      assume(progress).to.be.instanceof(Progress);
+    });
   });
 });

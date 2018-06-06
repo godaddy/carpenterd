@@ -1,12 +1,30 @@
 'use strict';
+/* eslint max-statements: 0 */
 
 describe('Progress', function () {
-  const Progress = require('../../../lib/constructor/progress');
+  const Progress = require('../../../lib/construct/progress');
   const uuid = '87e29af5-094f-48fd-bafa-42e59f88c472';
   const Stream = require('stream');
+  const rip = require('rip-out');
   const assume = require('assume');
+  const sinon = require('sinon');
+  assume.use(require('assume-sinon'));
 
+  const nsqTopic = 'not-the-real-status-topic';
   let progress;
+  let nsqProgress;
+  let writerSpy;
+  const nsqMetadata = {
+    name: 'somePkg',
+    env: 'lol',
+    version: '1.2.3.4.5',
+    type: 'tessellate'
+  };
+  const nsqExpected = {
+    ...rip(nsqMetadata, 'type'),
+    buildType: nsqMetadata.type,
+    locale: 'lol-CAT'
+  };
 
   function extend(options, streamId, next) {
     progress.write = function (data, id) {
@@ -26,10 +44,21 @@ describe('Progress', function () {
 
   beforeEach(function () {
     progress = new Progress();
+    const writer = { publish: function () {} };
+    nsqProgress = new Progress({
+      nsq: {
+        topic: nsqTopic,
+        writer: writer
+      },
+      metadata: nsqMetadata
+    });
+    writerSpy = sinon.spy(writer, 'publish');
   });
 
   afterEach(function () {
     progress = null;
+    nsqProgress = null;
+    writerSpy = null;
   });
 
   it('is exposed as constructor', function () {
@@ -95,6 +124,15 @@ describe('Progress', function () {
 
       progress.start(uuid);
     });
+
+    it('writes start event to nsq stream', function () {
+      nsqProgress.start(uuid, 2, { locale: nsqExpected.locale });
+      assume(writerSpy).is.calledWithMatch(nsqTopic, {
+        eventType: 'event',
+        message: sinon.match(`start\nProgress: 0`),
+        ...nsqExpected
+      });
+    });
   });
 
   describe('#done', function () {
@@ -111,6 +149,15 @@ describe('Progress', function () {
       }, uuid, done);
 
       progress.done(uuid);
+    });
+
+    it('writes done event to nsq stream', function () {
+      nsqProgress.done(uuid, { locale: nsqExpected.locale });
+      assume(writerSpy).is.calledWithMatch(nsqTopic, {
+        eventType: 'event',
+        message: sinon.match(`finished\nProgress: 100`),
+        ...nsqExpected
+      });
     });
   });
 
@@ -129,6 +176,18 @@ describe('Progress', function () {
       }, undefined, done);
 
       progress.ignore();
+    });
+
+    it('writes ignore event to nsq stream', function () {
+      nsqProgress.buildsCompleted = 0;
+      nsqProgress.ignore();
+
+      assume(writerSpy).is.calledWithMatch(nsqTopic, {
+        eventType: 'ignored',
+        total: 0,
+        message: 'Builds Queued',
+        ...rip(nsqExpected, 'locale')
+      });
     });
   });
 
@@ -163,6 +222,31 @@ describe('Progress', function () {
 
       assume(progress.stream._writableState.ended).to.equal(true);
       assume(progress.stream._readableState.ended).to.equal(true);
+    });
+
+    it('writes end event to nsq stream', function () {
+      nsqProgress.statusWriter.buildsCompleted = 7;
+      nsqProgress.end();
+
+      assume(writerSpy).is.calledWithMatch(nsqTopic, {
+        eventType: 'queued',
+        total: 7,
+        message: 'Builds Queued',
+        ...rip(nsqExpected, 'locale')
+      });
+    });
+
+    it('writes end event with error to nsq stream', function () {
+      nsqProgress.statusWriter.buildsCompleted = 1;
+      const errorMessage = 'printer on fire';
+      nsqProgress.end(new Error(errorMessage));
+
+      assume(writerSpy).is.calledWithMatch(nsqTopic, {
+        eventType: 'error',
+        total: 1,
+        message: errorMessage,
+        ...rip(nsqExpected, 'locale')
+      });
     });
   });
 

@@ -2,7 +2,10 @@ sudo: true
 language: node_js
 node_js:
   - "8"
-  - "6"
+  - "10"
+matrix:
+  allow_failures:
+  - node_js: "10"
 services:
   - cassandra
   - redis-server
