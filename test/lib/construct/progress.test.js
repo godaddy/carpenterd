@@ -125,9 +125,9 @@ describe('Progress', function () {
       progress.start(uuid);
     });
 
-    it('writes start event to nsq stream', function () {
+    it('ignores start event when writing to NSQ', function () {
       nsqProgress.start(uuid, 2, { locale: nsqExpected.locale });
-      assume(writerSpy).is.calledWithMatch(nsqTopic, {
+      assume(writerSpy).is.not.calledWithMatch(nsqTopic, {
         eventType: 'event',
         message: sinon.match(`start\nProgress: 0`),
         ...nsqExpected
@@ -144,7 +144,7 @@ describe('Progress', function () {
     it('writes default start object data to stream', function (done) {
       extend({
         event: 'task',
-        message: 'finished',
+        message: 'Successfully queued build',
         progress: 100
       }, uuid, done);
 
@@ -155,7 +155,7 @@ describe('Progress', function () {
       nsqProgress.done(uuid, { locale: nsqExpected.locale });
       assume(writerSpy).is.calledWithMatch(nsqTopic, {
         eventType: 'event',
-        message: sinon.match(`finished\nProgress: 100`),
+        message: sinon.match(`Successfully queued build`),
         ...nsqExpected
       });
     });
