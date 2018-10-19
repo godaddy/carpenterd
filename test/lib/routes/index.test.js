@@ -16,6 +16,8 @@ const agent = new Agent({ keepAlive: true });
 
 const application = require('../../../lib/');
 
+assume.use(require('assume-sinon'));
+
 describe('Application routes', function () {
   this.timeout(5E5); // eslint-disable-line
   let app;
@@ -191,13 +193,18 @@ describe('Application routes', function () {
     });
 
     it('sends the payload to the feedsme service after a successful build', function (next) {
-
+      const feedStub = sinon.stub(app.feedsme, 'change').yieldsAsync(null, null);
+      const pay = getPayload(payload);
+      pay.__published = true;
       nockFeedme();
 
       fs.createReadStream(payload).pipe(createRequest('post', 'build'))
         .on('data', validateMessages)
-        .on('end', next)
-        .on('error', next);
+        .on('error', next)
+        .on('end', () => {
+          assume(feedStub).is.calledWithMatch('dev', sinon.match.has('data', sinon.match.has('__published', true)), sinon.match.func);
+          next();
+        });
     });
   });
 
