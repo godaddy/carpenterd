@@ -194,8 +194,6 @@ describe('Application routes', function () {
 
     it('sends the payload to the feedsme service after a successful build', function (next) {
       const feedStub = sinon.stub(app.feedsme, 'change').yieldsAsync(null, null);
-      const pay = getPayload(payload);
-      pay.__published = true;
       nockFeedme();
 
       fs.createReadStream(payload).pipe(createRequest('post', 'build'))
@@ -203,6 +201,7 @@ describe('Application routes', function () {
         .on('error', next)
         .on('end', () => {
           assume(feedStub).is.calledWithMatch('dev', sinon.match.hasNested('data.__published', true), sinon.match.func);
+          sinon.restore();
           next();
         });
     });
