@@ -202,7 +202,7 @@ describe('Application routes', function () {
         .on('data', validateMessages)
         .on('error', next)
         .on('end', () => {
-          assume(feedStub).is.calledWithMatch('dev', sinon.match.has('data', sinon.match.has('__published', true)), sinon.match.func);
+          assume(feedStub).is.calledWithMatch('dev', sinon.match.hasNested('data.__published', true), sinon.match.func);
           next();
         });
     });
