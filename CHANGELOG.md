@@ -1,5 +1,7 @@
 # CHANGELOG
 
+### 2.6.0
+
 - Add timing information to status nsq messages
 - Add additional status nsq messages for unpack, pack, upload
 - Allow for `npm install` retries in nsq status messages
