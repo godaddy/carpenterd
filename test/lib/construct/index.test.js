@@ -477,8 +477,8 @@ describe('Construct', function () {
         assume(getLocalesStub).is.called(1);
         // We end the work as soon as everything is queued, even though we may still end up doing a bit more
         setTimeout(() => {
-          // start, progress, finished, and actual queueing per locale (en-LOL, not-REAL) and progress end
-          assume(writerSpy).is.called(8);
+          // start, progress, finished, and actual queueing per locale (en-LOL, not-REAL) and progress start/end
+          assume(writerSpy).is.called(9);
 
           assertNsqLocaleProgress(writerSpy, 'en-LOL', 'es6');
           assertNsqLocaleProgress(writerSpy, 'not-REAL', 'es6');
