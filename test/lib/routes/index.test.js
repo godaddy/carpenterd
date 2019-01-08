@@ -23,17 +23,18 @@ describe('Application routes', function () {
   let app;
 
   const payload = path.join(__dirname, '..', '..', 'fixtures', 'payload-0.0.0.json');
+  const v2payload = path.join(__dirname, '..', '..', 'fixtures', 'v2-payload-0.0.0.json');
   const configFile = path.join(__dirname, '..', '..', 'config.json');
   function getPayload(filepath) {
     return JSON.parse(fs.readFileSync(filepath)); // eslint-disable-line
   }
 
-  function nockFeedme() {
-    nock(app.config.get('feedsme'))
-      .post('/change')
-      .reply(200, function reply(uri, body) {
-        body = JSON.parse(body);
+  function nockFeedme(version) {
+    version = version === 'v1' ? '' : 'v2';
 
+    nock(app.config.get('feedsme'))
+      .post([version, 'change'].filter(Boolean).join('/'))
+      .reply(200, function reply(uri, body) {
         const pkgjson = getPayload(payload);
 
         assume(body).is.a('object');
@@ -98,21 +99,119 @@ describe('Application routes', function () {
     }, next);
   }
 
-  describe('/build', function () {
-    function validateMessages(data) {
-      data = JSON.parse(data);
+  function validateMessages(data) {
+    data = JSON.parse(data);
 
-      assume(data.task).to.not.equal('ignored');
-      assume(data).to.have.property('progress');
-      assume(data).to.have.property('message');
-      assume(data.progress).to.be.a('number');
-      assume(data.progress).to.not.equal(-1);
-      assume(data.timestamp).to.be.a('number');
-      assume(data.id).to.be.a('string');
-    }
+    assume(data.task).to.not.equal('ignored');
+    assume(data).to.have.property('progress');
+    assume(data).to.have.property('message');
+    assume(data.progress).to.be.a('number');
+    assume(data.progress).to.not.equal(-1);
+    assume(data.timestamp).to.be.a('number');
+    assume(data.id).to.be.a('string');
+  }
 
+  describe('/v2/build', function () {
     it('accepts npm publish JSON payloads and returns finished task messages', function (done) {
       nockFeedme();
+
+      fs.createReadStream(v2payload)
+        .pipe(createRequest('post', 'v2/build'))
+        .on('error', done)
+        .on('end', done)
+        .on('data', validateMessages);
+    });
+
+    it('returns an error if payload expectations are not satisfied', function (done) {
+      const postData = getPayload(v2payload);
+
+      delete postData.data._attachments;
+
+      const post = createRequest('post', 'v2/build').on('error', done).on('data', function (resData) {
+        assume(resData).to.be.an('buffer');
+        assume(resData.toString()).to.include('"_attachments" is required');
+
+        done();
+      });
+
+      post.end(Buffer.from(JSON.stringify(postData)));
+    });
+
+    it('can create minified builds', function (done) {
+      const postData = getPayload(v2payload);
+      const spy = sinon.spy(app.construct.nsq.writer, 'publish');
+      nockFeedme();
+      postData.data.env = 'prod';
+
+      const post = createRequest('post', 'v2/build')
+        .on('error', done)
+        .on('data', validateMessages)
+        .on('end', done);
+
+      post.end(Buffer.from(JSON.stringify(postData)));
+
+      app.construct.once('queued', function (topic, spec) {
+        assume(topic).equals('build');
+        assume(spy.called).true();
+        assume(spec.name).equals(postData.data.name);
+        assume(spec.env).equals(postData.data.env);
+        assume(spec.type).is.a('string');
+        assume(spec.version).is.a('string');
+        assume(spec.promote).equals(postData.promote);
+        spy.restore();
+      });
+    });
+
+    it('can run multiple builds for different locales', function (done) {
+      const postData = getPayload(v2payload);
+      const cache = {};
+
+      let calledOnce = true;
+      nockFeedme();
+
+      postData.data.versions['0.0.0'].locales = ['en-US', 'en-GB'];
+      const post = createRequest('post', 'v2/build')
+        .on('error', done)
+        .on('data', function (resData) {
+          resData = JSON.parse(resData);
+          assume(resData).to.have.property('id');
+          assume(app.construct.valid(resData.id)).to.equal(true);
+          if (!cache[resData.id]) cache[resData.id] = 0;
+          cache[resData.id]++;
+        })
+        .on('end', function () {
+          assume(calledOnce).to.equal(true);
+          assume(Object.keys(cache)).to.have.length(2);
+
+          for (const id of Object.keys(cache)) {
+            assume(cache[id]).to.equal(3);
+          }
+
+          calledOnce = false;
+          done();
+        });
+
+      post.end(Buffer.from(JSON.stringify(postData)));
+    });
+
+    it('sends the payload to the feedsme service after a successful build', function (next) {
+      const feedStub = sinon.stub(app.feedsme, 'change').yieldsAsync(null, null);
+      nockFeedme();
+
+      fs.createReadStream(v2payload).pipe(createRequest('post', 'v2/build'))
+        .on('data', validateMessages)
+        .on('error', next)
+        .on('end', () => {
+          assume(feedStub).is.calledWithMatch('dev', sinon.match.hasNested('data.__published', true), sinon.match.func);
+          sinon.restore();
+          next();
+        });
+    });
+  });
+
+  describe('/build', function () {
+    it('accepts npm publish JSON payloads and returns finished task messages', function (done) {
+      nockFeedme('v1');
 
       fs.createReadStream(payload)
         .pipe(createRequest('post', 'build'))
@@ -133,13 +232,13 @@ describe('Application routes', function () {
         done();
       });
 
-      post.end(new Buffer(JSON.stringify(data)));
+      post.end(Buffer.from(JSON.stringify(data)));
     });
 
     it('can create minified builds', function (done) {
       const data = getPayload(payload);
       const spy = sinon.spy(app.construct.nsq.writer, 'publish');
-      nockFeedme();
+      nockFeedme('v1');
       data.env = 'prod';
 
       const post = createRequest('post', 'build')
@@ -147,7 +246,7 @@ describe('Application routes', function () {
         .on('data', validateMessages)
         .on('end', done);
 
-      post.end(new Buffer(JSON.stringify(data)));
+      post.end(Buffer.from(JSON.stringify(data)));
 
       app.construct.once('queued', function (topic, spec) {
         assume(topic).equals('build');
@@ -165,7 +264,7 @@ describe('Application routes', function () {
       const cache = {};
 
       let calledOnce = true;
-      nockFeedme();
+      nockFeedme('v1');
 
       data.versions['0.0.0'].locales = ['en-US', 'en-GB'];
       const post = createRequest('post', 'build')
@@ -189,12 +288,12 @@ describe('Application routes', function () {
           done();
         });
 
-      post.end(new Buffer(JSON.stringify(data)));
+      post.end(Buffer.from(JSON.stringify(data)));
     });
 
-    it('sends the payload to the feedsme service after a successful build', function (next) {
-      const feedStub = sinon.stub(app.feedsme, 'change').yieldsAsync(null, null);
-      nockFeedme();
+    it('sends the payload to the feedsme v1 service after a successful build', function (next) {
+      const feedStub = sinon.stub(app.feedsmeV1, 'change').yieldsAsync(null, null);
+      nockFeedme('v1');
 
       fs.createReadStream(payload).pipe(createRequest('post', 'build'))
         .on('data', validateMessages)

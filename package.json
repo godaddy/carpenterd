@@ -13,7 +13,7 @@
     "test:mocha": "mocha test/**/*.test.js",
     "watch": "mocha --watch --reporter spec $(find test -path test/fixtures -prune -o -name '*.test.js')",
     "eslint": "eslint-godaddy -c .eslintrc lib/ test/lib/",
-    "pretest": "npm run eslint"
+    "posttest": "npm run eslint"
   },
   "repository": {
     "type": "git",
@@ -34,7 +34,7 @@
     "async": "~1.4.2",
     "babel": "~5.8.20",
     "bffs": "^5.2.1",
-    "bl": "~1.1.2",
+    "bl": "^2.1.2",
     "body-parser": "^1.18.3",
     "browserify": "~12.0.1",
     "cdnup": "^2.6.0",
@@ -47,7 +47,7 @@
     "feedsme-api-client": "^2.0.0",
     "fingerprinting": "~1.0.0",
     "from2": "^2.3.0",
-    "joi": "~6.7.1",
+    "joi": "^14.3.1",
     "json-try-parse": "~1.0.0",
     "lodash.intersection": "~3.2.0",
     "lodash.omit": "^4.5.0",
@@ -80,16 +80,16 @@
   "devDependencies": {
     "assume": "^2.1.0",
     "assume-sinon": "^1.0.0",
-    "babel-eslint": "^6.1.2",
-    "eslint": "^4.4.1",
-    "eslint-config-godaddy": "^2.0.0",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.12.0",
+    "eslint-config-godaddy": "^3.0.0",
     "eslint-plugin-json": "^1.2.0",
-    "eslint-plugin-mocha": "^4.11.0",
-    "hyperquest": "~1.2.0",
+    "eslint-plugin-mocha": "^5.2.0",
+    "hyperquest": "^2.1.3",
     "mocha": "^5.2.0",
-    "nock": "2.10.0",
-    "nyc": "^11.8.0",
+    "nock": "^10.0.6",
+    "nyc": "^13.1.0",
     "rip-out": "^1.0.0",
-    "sinon": "^5.0.10"
+    "sinon": "^7.2.2"
   }
 }

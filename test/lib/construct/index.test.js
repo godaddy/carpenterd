@@ -53,7 +53,7 @@ describe('Construct', function () {
     sinon.restore();
   });
 
-  function assertNsqLocaleProgress(writerSpy, locale, buildType) {
+  function assertNsqLocaleProgress(writerSpy, locale, buildType, promote = false) {
     const commonPayload = {
       name: 'test',
       env: 'dev',
@@ -74,7 +74,8 @@ describe('Construct', function () {
 
     assume(writerSpy).is.calledWithMatch(queueingTopic, {
       ...rip(commonPayload, 'buildType'),
-      type: commonPayload.buildType
+      type: commonPayload.buildType,
+      promote
     });
   }
 
@@ -235,7 +236,7 @@ describe('Construct', function () {
           // start, progress, finished, and actual queueing + progress end
           assume(writerSpy).is.called(4);
 
-          assertNsqLocaleProgress(writerSpy, 'en-LOL', 'webpack');
+          assertNsqLocaleProgress(writerSpy, 'en-LOL', 'webpack', true);
 
           assume(writerSpy).is.calledWithMatch(statusTopic, {
             eventType: 'queued',
@@ -407,17 +408,20 @@ describe('Construct', function () {
     it('launches a build process and returns a progress stream', function (done) {
       const prepareStub = sinon.stub(Object.getPrototypeOf(construct), 'prepare').callsArgWithAsync(3, null, {});
       const progress = construct.build({
-        'name': 'test',
-        'versions': {
-          '1.0.0': {
-            name: 'test',
-            keywords: [
-              'es6'
-            ]
+        promote: false,
+        data: {
+          'name': 'test',
+          'versions': {
+            '1.0.0': {
+              name: 'test',
+              keywords: [
+                'es6'
+              ]
+            }
+          },
+          'dist-tags': {
+            latest: '1.0.0'
           }
-        },
-        'dist-tags': {
-          latest: '1.0.0'
         }
       }, function (error) {
         assume(error).to.be.falsey();
@@ -430,13 +434,16 @@ describe('Construct', function () {
 
     it('returns early if the package.json has a build flag that is set to false', function (done) {
       const progress = construct.build({
-        'name': 'test',
-        'dist-tags': {
-          latest: '1.0.0'
-        },
-        'versions': {
-          '1.0.0': {
-            build: false
+        promote: false,
+        data: {
+          'name': 'test',
+          'dist-tags': {
+            latest: '1.0.0'
+          },
+          'versions': {
+            '1.0.0': {
+              build: false
+            }
           }
         }
       }, function (error) {
@@ -458,18 +465,22 @@ describe('Construct', function () {
       const constructProto = Object.getPrototypeOf(construct);
       const prepareStub = sinon.stub(constructProto, 'prepare').callsArgWithAsync(3, null, {});
       const getLocalesStub = sinon.stub(constructProto, 'getLocales').callsArgWithAsync(1, null, ['en-LOL', 'not-REAL']);
+
       const progress = construct.build({
-        'name': 'test',
-        'versions': {
-          '1.0.0': {
-            name: 'test',
-            keywords: [
-              'es6'
-            ]
+        promote: false,
+        data: {
+          'name': 'test',
+          'versions': {
+            '1.0.0': {
+              name: 'test',
+              keywords: [
+                'es6'
+              ]
+            }
+          },
+          'dist-tags': {
+            latest: '1.0.0'
           }
-        },
-        'dist-tags': {
-          latest: '1.0.0'
         }
       }, function (error) {
         assume(error).to.be.falsey();
