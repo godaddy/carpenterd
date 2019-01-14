@@ -18,6 +18,10 @@ const application = require('../../../lib/');
 
 assume.use(require('assume-sinon'));
 
+afterEach(function () {
+  sinon.restore();
+});
+
 describe('Application routes', function () {
   this.timeout(5E5); // eslint-disable-line
   let app;
@@ -29,11 +33,9 @@ describe('Application routes', function () {
     return JSON.parse(fs.readFileSync(filepath)); // eslint-disable-line
   }
 
-  function nockFeedme(version) {
-    version = version === 'v1' ? '' : 'v2';
-
+  function nockFeedme() {
     nock(app.config.get('feedsme'))
-      .post([version, 'change'].filter(Boolean).join('/'))
+      .post('v2/change')
       .reply(200, function reply(uri, body) {
         const pkgjson = getPayload(payload);
 
@@ -158,7 +160,6 @@ describe('Application routes', function () {
         assume(spec.type).is.a('string');
         assume(spec.version).is.a('string');
         assume(spec.promote).equals(postData.promote);
-        spy.restore();
       });
     });
 
@@ -202,8 +203,12 @@ describe('Application routes', function () {
         .on('data', validateMessages)
         .on('error', next)
         .on('end', () => {
-          assume(feedStub).is.calledWithMatch('dev', sinon.match.hasNested('data.__published', true), sinon.match.func);
-          sinon.restore();
+          assume(feedStub).is.calledWithMatch('dev', sinon.match({
+            data: {
+              data: { __published: true },
+              promote: false
+            }
+          }), sinon.match.func);
           next();
         });
     });
@@ -211,7 +216,7 @@ describe('Application routes', function () {
 
   describe('/build', function () {
     it('accepts npm publish JSON payloads and returns finished task messages', function (done) {
-      nockFeedme('v1');
+      nockFeedme();
 
       fs.createReadStream(payload)
         .pipe(createRequest('post', 'build'))
@@ -238,7 +243,7 @@ describe('Application routes', function () {
     it('can create minified builds', function (done) {
       const data = getPayload(payload);
       const spy = sinon.spy(app.construct.nsq.writer, 'publish');
-      nockFeedme('v1');
+      nockFeedme();
       data.env = 'prod';
 
       const post = createRequest('post', 'build')
@@ -255,7 +260,6 @@ describe('Application routes', function () {
         assume(spec.env).equals(data.env);
         assume(spec.type);
         assume(spec.version);
-        spy.restore();
       });
     });
 
@@ -264,7 +268,7 @@ describe('Application routes', function () {
       const cache = {};
 
       let calledOnce = true;
-      nockFeedme('v1');
+      nockFeedme();
 
       data.versions['0.0.0'].locales = ['en-US', 'en-GB'];
       const post = createRequest('post', 'build')
@@ -291,16 +295,20 @@ describe('Application routes', function () {
       post.end(Buffer.from(JSON.stringify(data)));
     });
 
-    it('sends the payload to the feedsme v1 service after a successful build', function (next) {
-      const feedStub = sinon.stub(app.feedsmeV1, 'change').yieldsAsync(null, null);
-      nockFeedme('v1');
+    it('sends the payload to the feedsme service after a successful build', function (next) {
+      const feedStub = sinon.stub(app.feedsme, 'change').yieldsAsync(null, null);
+      nockFeedme();
 
       fs.createReadStream(payload).pipe(createRequest('post', 'build'))
         .on('data', validateMessages)
         .on('error', next)
         .on('end', () => {
-          assume(feedStub).is.calledWithMatch('dev', sinon.match.hasNested('data.__published', true), sinon.match.func);
-          sinon.restore();
+          assume(feedStub).is.calledWithMatch('dev', sinon.match({
+            data: {
+              data: { __published: true },
+              promote: true
+            }
+          }), sinon.match.func);
           next();
         });
     });
