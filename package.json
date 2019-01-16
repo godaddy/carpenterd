@@ -44,7 +44,7 @@
     "diagnostics": "~1.0.1",
     "emits": "~3.0.0",
     "errs": "~0.3.2",
-    "feedsme-api-client": "^2.0.0",
+    "feedsme-api-client": "^3.0.0",
     "fingerprinting": "~1.0.0",
     "from2": "^2.3.0",
     "joi": "^14.3.1",
