@@ -23,6 +23,7 @@ describe('Application routes', function () {
   let app;
 
   const payload = path.join(__dirname, '..', '..', 'fixtures', 'payload-0.0.0.json');
+  const webpack = path.join(__dirname, '..', '..', 'fixtures', 'webpack-0.0.1.json');
   const configFile = path.join(__dirname, '..', '..', 'config.json');
   function getPayload(filepath) {
     return JSON.parse(fs.readFileSync(filepath)); // eslint-disable-line
@@ -49,7 +50,7 @@ describe('Application routes', function () {
   before(function (done) {
     application.start({
       logger: {
-        level: 'critical'
+        level: 'silly'
       },
       ensure: true,
       config: {
@@ -131,6 +132,17 @@ describe('Application routes', function () {
         assume(resData.toString()).to.include('"_attachments" is required');
 
         done();
+      });
+
+      post.end(new Buffer(JSON.stringify(data)));
+    });
+
+    it.only('can install webpack-cli', function (done) {
+      nockFeedme();
+
+      const data = getPayload(webpack);
+      const post = createRequest('post', 'build').on('error', done).on('data', function (resData) {
+        console.log(resData.toString());
       });
 
       post.end(new Buffer(JSON.stringify(data)));
