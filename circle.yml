@@ -1,7 +1,0 @@
-machine:
-  services:
-    - cassandra
-    - redis
-
-  node:
-    version: 8
