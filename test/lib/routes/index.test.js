@@ -102,6 +102,7 @@ describe('Application routes', function () {
   }
 
   function validateMessages(data) {
+    console.log(data)
     data = JSON.parse(data);
 
     assume(data.task).to.not.equal('ignored');
@@ -114,7 +115,7 @@ describe('Application routes', function () {
   }
 
   describe('/v2/build', function () {
-    it('accepts npm publish JSON payloads and returns finished task messages', function (done) {
+    it.only('accepts npm publish JSON payloads and returns finished task messages', function (done) {
       nockFeedme();
 
       fs.createReadStream(v2payload)
