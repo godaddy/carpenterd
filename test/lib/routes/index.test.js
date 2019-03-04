@@ -102,7 +102,7 @@ describe('Application routes', function () {
   }
 
   function validateMessages(data) {
-    console.log(data)
+    console.log(data);
     data = JSON.parse(data);
 
     assume(data.task).to.not.equal('ignored');
