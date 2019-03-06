@@ -1,8 +1,8 @@
 # CHANGELOG
 
-- [#41] Extract config
+- [#42] Extract config
   - `async/await` conversion
-  - Use `@wrhs/extract-config` to eagerly use the config
+  - Preparing for `@wrhs/extract-config`'s eager use of config
 
 - [#40] Modernize files
   - `prototype` over `class`
