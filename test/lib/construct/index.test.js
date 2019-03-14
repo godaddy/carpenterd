@@ -406,7 +406,7 @@ describe('Construct', function () {
     });
 
     it('launches a build process and returns a progress stream', function (done) {
-      const prepareStub = sinon.stub(Object.getPrototypeOf(construct), 'prepare').callsArgWithAsync(3, null, {});
+      const prepareStub = sinon.stub(Object.getPrototypeOf(construct), 'prepare').resolves({});
       const progress = construct.build({
         promote: false,
         data: {
@@ -463,7 +463,7 @@ describe('Construct', function () {
     it('writes out the expected nsq messages', function (done) {
       const writerSpy = sinon.spy(construct.nsq.writer, 'publish');
       const constructProto = Object.getPrototypeOf(construct);
-      const prepareStub = sinon.stub(constructProto, 'prepare').callsArgWithAsync(3, null, {});
+      const prepareStub = sinon.stub(constructProto, 'prepare').resolves({});
       const getLocalesStub = sinon.stub(constructProto, 'getLocales').callsArgWithAsync(1, null, ['en-LOL', 'not-REAL']);
 
       const progress = construct.build({
