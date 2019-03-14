@@ -187,56 +187,6 @@ describe('Construct', function () {
     });
   });
 
-  describe('#buildOne', function () {
-    it('should run buildOne and succeed', function (done) {
-      const spec = {
-        name: 'test',
-        version: '1.0.0',
-        env: 'dev',
-        type: 'webpack'
-      };
-
-      construct.buildOne(spec, function (err) {
-        assume(err).is.falsey();
-        done();
-      });
-    });
-
-    it('writes out the expected nsq messages', function (done) {
-      const writerSpy = sinon.spy(construct.nsq.writer, 'publish');
-      const progress = construct.buildOne({
-        name: 'test',
-        version: '1.0.0',
-        env: 'dev',
-        type: 'webpack',
-        locale: 'en-LOL'
-      }, function (error) {
-        assume(error).to.be.falsey();
-
-        // We end the work as soon as everything is queued, even though we may still end up doing a bit more
-        setTimeout(() => {
-          // start, progress, finished, and actual queueing + progress end
-          assume(writerSpy).is.called(4);
-
-          assertNsqLocaleProgress(writerSpy, 'en-LOL', 'webpack', true);
-
-          assume(writerSpy).is.calledWithMatch(statusTopic, {
-            eventType: 'queued',
-            name: 'test',
-            env: 'dev',
-            buildType: 'webpack',
-            total: 1,
-            message: 'Builds Queued'
-          });
-
-          done();
-        }, 100);
-      });
-
-      assume(progress).to.be.instanceof(Progress);
-    });
-  });
-
   describe('#_buildError', function () {
     it('should execte _buildError and succeed', function () {
       const spec = {
