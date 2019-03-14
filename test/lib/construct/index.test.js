@@ -121,7 +121,7 @@ describe('Construct', function () {
     }
 
     it('is a function', function () {
-      assume(construct.specs).to.be.a('function');
+      assume(construct.specs).to.be.a('asyncfunction');
       assume(construct.specs).to.have.length(2);
     });
 
@@ -280,34 +280,24 @@ describe('Construct', function () {
 
     it('is a function', function () {
       assume(construct.getLocales).to.be.a('function');
-      assume(construct.getLocales).to.have.length(2);
+      assume(construct.getLocales).to.have.length(1);
     });
 
-    it('extracts the package.json from the payload', function (done) {
-      construct.getLocales(localeData, function (error, locales) {
-        assume(error).to.be.falsey();
-
-        assume(locales).to.be.an('array');
-        assume(locales).to.include('nl-NL');
-
-        done();
-      });
+    it('extracts the package.json from the payload', async function () {
+      const locales = await construct.getLocales(localeData);
+      assume(locales).to.be.an('array');
+      assume(locales).to.include('nl-NL');
     });
 
-    it('defaults to en-US if no locale is specified', function (done) {
+    it('defaults to en-US if no locale is specified', async function () {
       delete localeData.versions['1.0.0'].locales;
 
-      construct.getLocales(localeData, function (error, locales) {
-        assume(error).to.be.falsey();
-
-        assume(locales).to.be.an('array');
-        assume(locales).to.include('en-US');
-
-        done();
-      });
+      const locales = await construct.getLocales(localeData);
+      assume(locales).to.be.an('array');
+      assume(locales).to.include('en-US');
     });
 
-    it('generates an intersection of locales for all dependencies', function (done) {
+    it('generates an intersection of locales for all dependencies', async function () {
       const get = construct.models.Package.get;
       const packages = {
         myPackage: {
@@ -332,17 +322,12 @@ describe('Construct', function () {
         react: '0.13.3'
       };
 
-      construct.getLocales(localeData, function (error, locales) {
-        assume(error).to.be.falsey();
-
-        assume(locales).to.be.an('array');
-        assume(locales).to.include('en-GB');
-        assume(locales).to.include('nl-NL');
-        assume(locales).to.not.include('de-DE');
-
-        construct.models.Package.get = get;
-        done();
-      });
+      const locales = await construct.getLocales(localeData);
+      assume(locales).to.be.an('array');
+      assume(locales).to.include('en-GB');
+      assume(locales).to.include('nl-NL');
+      assume(locales).to.not.include('de-DE');
+      construct.models.Package.get = get;
     });
   });
 
@@ -464,7 +449,7 @@ describe('Construct', function () {
       const writerSpy = sinon.spy(construct.nsq.writer, 'publish');
       const constructProto = Object.getPrototypeOf(construct);
       const prepareStub = sinon.stub(constructProto, 'prepare').resolves({});
-      const getLocalesStub = sinon.stub(constructProto, 'getLocales').callsArgWithAsync(1, null, ['en-LOL', 'not-REAL']);
+      const getLocalesStub = sinon.stub(constructProto, 'getLocales').resolves(['en-LOL', 'not-REAL']);
 
       const progress = construct.build({
         promote: false,
