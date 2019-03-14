@@ -196,7 +196,7 @@ describe('Construct', function () {
         type: 'webpack'
       };
 
-      construct._buildError(new Error('whatever'), spec);
+      construct.builder._buildError(new Error('whatever'), spec);
     });
   });
 
