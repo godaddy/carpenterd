@@ -366,7 +366,7 @@ describe('Construct', function () {
     });
   });
 
-  describe.skip('#build', function () {
+  describe('#build', function () {
     it('is a function', function () {
       assume(construct.build).to.be.a('function');
       assume(construct.build).to.have.length(2);
