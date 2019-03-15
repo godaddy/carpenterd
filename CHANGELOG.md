@@ -1,5 +1,7 @@
 # CHANGELOG
 
+### 4.0.0
+
 - [#42] Extract config
   - `async/await` conversion
   - Preparing for `@wrhs/extract-config`'s eager use of config
