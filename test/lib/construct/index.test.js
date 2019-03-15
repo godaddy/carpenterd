@@ -121,70 +121,54 @@ describe('Construct', function () {
     }
 
     it('is a function', function () {
-      assume(construct.specs).to.be.a('function');
-      assume(construct.specs).to.have.length(2);
+      assume(construct.specs).to.be.a('asyncfunction');
+      assume(construct.specs).to.have.length(1);
     });
 
-    it('returns build specifications bffs understands', function (done) {
-      construct.specs(data(), function (err, result) {
-        assume(err).to.be.falsey();
-        assume(result).to.be.a('object');
-        assume(result).to.have.property('type', 'browserify');
-        assume(result).to.have.property('version', '1.0.0');
-        assume(result).to.have.property('env', 'test');
-        assume(result).to.have.property('name', 'test');
-        assume(result).to.have.property('entry');
-
-        done();
-      });
+    it('returns build specifications bffs understands', async function () {
+      const result = await construct.specs(data());
+      assume(result).to.be.a('object');
+      assume(result).to.have.property('type', 'browserify');
+      assume(result).to.have.property('version', '1.0.0');
+      assume(result).to.have.property('env', 'test');
+      assume(result).to.have.property('name', 'test');
+      assume(result).to.have.property('entry');
     });
 
-    it('will not default to any build specifications', function (done) {
+    it('will not default to any build specifications', async function () {
       local = data();
       local.build = 'unknown';
       delete local.versions;
 
-      construct.specs(local, function (err, result) {
-        assume(err).to.be.falsey();
-        assume(result).to.have.property('type');
-        assume(result).to.have.property('entry');
-
-        done();
-      });
+      const result = await construct.specs(local);
+      assume(result).to.have.property('type');
+      assume(result).to.have.property('entry');
     });
 
-    it('can also use keywords to identify the build type', function (done) {
+    it('can also use keywords to identify the build type', async function () {
       local = data();
 
       local.versions['1.0.0'].keywords = ['es2016'];
       delete local.versions['1.0.0'].build;
 
-      construct.specs(local, function (err, result) {
-        assume(err).to.be.falsey();
-        assume(result).to.have.property('type', 'es6');
-
-        done();
-      });
+      const result = await construct.specs(local);
+      assume(result).to.have.property('type', 'es6');
     });
 
-    it('will check properties on package.json', function (done) {
+    it('will check properties on package.json', async function () {
       local = data();
 
       delete local.versions['1.0.0'].build;
-      construct.specs(local, function (err, result) {
-        assume(err).to.be.falsey();
-        assume(result).to.be.a('object');
-        assume(result).to.have.property('type', 'webpack');
-        assume(result).to.have.property('version', '1.0.0');
-        assume(result).to.have.property('env', 'test');
-        assume(result).to.have.property('name', 'test');
-        assume(result).to.have.property('entry', '/path/to/config.js');
-
-        done();
-      });
+      const result = await construct.specs(local);
+      assume(result).to.be.a('object');
+      assume(result).to.have.property('type', 'webpack');
+      assume(result).to.have.property('version', '1.0.0');
+      assume(result).to.have.property('env', 'test');
+      assume(result).to.have.property('name', 'test');
+      assume(result).to.have.property('entry', '/path/to/config.js');
     });
 
-    it('will only supply paths to data.entry if the property matches a builder', function (done) {
+    it('will only supply paths to data.entry if the property matches a builder', async function () {
       local = data();
 
       delete local.versions['1.0.0'].build;
@@ -192,66 +176,14 @@ describe('Construct', function () {
         some: 'unsave object'
       };
 
-      construct.specs(local, function (err, result) {
-        assume(err).to.be.falsey();
-        assume(result).to.be.a('object');
-        assume(result).to.have.property('version', '1.0.0');
-        assume(result).to.have.property('env', 'test');
-        assume(result).to.have.property('name', 'test');
-        assume(result).to.have.property('entry');
+      const result = await construct.specs(local);
 
-        done();
-      });
-    });
-  });
+      assume(result).to.be.a('object');
+      assume(result).to.have.property('version', '1.0.0');
+      assume(result).to.have.property('env', 'test');
+      assume(result).to.have.property('name', 'test');
+      assume(result).to.have.property('entry');
 
-  describe('#buildOne', function () {
-    it('should run buildOne and succeed', function (done) {
-      const spec = {
-        name: 'test',
-        version: '1.0.0',
-        env: 'dev',
-        type: 'webpack'
-      };
-
-      construct.buildOne(spec, function (err) {
-        assume(err).is.falsey();
-        done();
-      });
-    });
-
-    it('writes out the expected nsq messages', function (done) {
-      const writerSpy = sinon.spy(construct.nsq.writer, 'publish');
-      const progress = construct.buildOne({
-        name: 'test',
-        version: '1.0.0',
-        env: 'dev',
-        type: 'webpack',
-        locale: 'en-LOL'
-      }, function (error) {
-        assume(error).to.be.falsey();
-
-        // We end the work as soon as everything is queued, even though we may still end up doing a bit more
-        setTimeout(() => {
-          // start, progress, finished, and actual queueing + progress end
-          assume(writerSpy).is.called(4);
-
-          assertNsqLocaleProgress(writerSpy, 'en-LOL', 'webpack', true);
-
-          assume(writerSpy).is.calledWithMatch(statusTopic, {
-            eventType: 'queued',
-            name: 'test',
-            env: 'dev',
-            buildType: 'webpack',
-            total: 1,
-            message: 'Builds Queued'
-          });
-
-          done();
-        }, 100);
-      });
-
-      assume(progress).to.be.instanceof(Progress);
     });
   });
 
@@ -264,7 +196,7 @@ describe('Construct', function () {
         type: 'webpack'
       };
 
-      construct._buildError(new Error('whatever'), spec);
+      construct.builder._buildError(new Error('whatever'), spec);
     });
   });
 
@@ -280,34 +212,24 @@ describe('Construct', function () {
 
     it('is a function', function () {
       assume(construct.getLocales).to.be.a('function');
-      assume(construct.getLocales).to.have.length(2);
+      assume(construct.getLocales).to.have.length(1);
     });
 
-    it('extracts the package.json from the payload', function (done) {
-      construct.getLocales(localeData, function (error, locales) {
-        assume(error).to.be.falsey();
-
-        assume(locales).to.be.an('array');
-        assume(locales).to.include('nl-NL');
-
-        done();
-      });
+    it('extracts the package.json from the payload', async function () {
+      const locales = await construct.getLocales(localeData);
+      assume(locales).to.be.an('array');
+      assume(locales).to.include('nl-NL');
     });
 
-    it('defaults to en-US if no locale is specified', function (done) {
+    it('defaults to en-US if no locale is specified', async function () {
       delete localeData.versions['1.0.0'].locales;
 
-      construct.getLocales(localeData, function (error, locales) {
-        assume(error).to.be.falsey();
-
-        assume(locales).to.be.an('array');
-        assume(locales).to.include('en-US');
-
-        done();
-      });
+      const locales = await construct.getLocales(localeData);
+      assume(locales).to.be.an('array');
+      assume(locales).to.include('en-US');
     });
 
-    it('generates an intersection of locales for all dependencies', function (done) {
+    it('generates an intersection of locales for all dependencies', async function () {
       const get = construct.models.Package.get;
       const packages = {
         myPackage: {
@@ -332,17 +254,12 @@ describe('Construct', function () {
         react: '0.13.3'
       };
 
-      construct.getLocales(localeData, function (error, locales) {
-        assume(error).to.be.falsey();
-
-        assume(locales).to.be.an('array');
-        assume(locales).to.include('en-GB');
-        assume(locales).to.include('nl-NL');
-        assume(locales).to.not.include('de-DE');
-
-        construct.models.Package.get = get;
-        done();
-      });
+      const locales = await construct.getLocales(localeData);
+      assume(locales).to.be.an('array');
+      assume(locales).to.include('en-GB');
+      assume(locales).to.include('nl-NL');
+      assume(locales).to.not.include('de-DE');
+      construct.models.Package.get = get;
     });
   });
 
@@ -406,7 +323,7 @@ describe('Construct', function () {
     });
 
     it('launches a build process and returns a progress stream', function (done) {
-      const prepareStub = sinon.stub(Object.getPrototypeOf(construct), 'prepare').callsArgWithAsync(3, null, {});
+      const prepareStub = sinon.stub(Object.getPrototypeOf(construct), 'prepare').resolves({});
       const progress = construct.build({
         promote: false,
         data: {
@@ -463,8 +380,8 @@ describe('Construct', function () {
     it('writes out the expected nsq messages', function (done) {
       const writerSpy = sinon.spy(construct.nsq.writer, 'publish');
       const constructProto = Object.getPrototypeOf(construct);
-      const prepareStub = sinon.stub(constructProto, 'prepare').callsArgWithAsync(3, null, {});
-      const getLocalesStub = sinon.stub(constructProto, 'getLocales').callsArgWithAsync(1, null, ['en-LOL', 'not-REAL']);
+      const prepareStub = sinon.stub(constructProto, 'prepare').resolves({});
+      const getLocalesStub = sinon.stub(constructProto, 'getLocales').resolves(['en-LOL', 'not-REAL']);
 
       const progress = construct.build({
         promote: false,

@@ -1,5 +1,13 @@
 # CHANGELOG
 
+- [#42] Extract config
+  - `async/await` conversion
+  - Preparing for `@wrhs/extract-config`'s eager use of config
+
+- [#40] Modernize files
+  - `prototype` over `class`
+  - Use arrow functions
+
 ### 2.6.0
 
 - Add timing information to status nsq messages
