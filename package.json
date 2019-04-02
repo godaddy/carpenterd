@@ -37,7 +37,7 @@
     "bl": "^2.1.2",
     "body-parser": "^1.18.3",
     "browserify": "~12.0.1",
-    "cdnup": "^2.6.0",
+    "cdnup": "^3.0.0",
     "clean-css": "~3.4.1",
     "create-servers": "~2.3.0",
     "datastar": "^1.6.0",
