@@ -31,6 +31,7 @@
   "author": "GoDaddy.com Operating Company LLC",
   "license": "MIT",
   "dependencies": {
+    "@wrhs/extract-config": "^1.0.0",
     "async": "~1.4.2",
     "babel": "~5.8.20",
     "bffs": "^5.2.1",
