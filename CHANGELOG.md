@@ -1,5 +1,10 @@
 # CHANGELOG
 
+- [#46] Default documenation
+  - Add: `CONTRUBUTING.md`, `SECURITY.md`
+  - update `LICENSE` year
+  - add `.github` templates
+
 ### 4.0.0
 
 - [#42] Extract config
@@ -19,3 +24,6 @@
 ### 2.3.1
 
 - [#33] Default `this.target` and use it as the default for `this.rootDir`.
+
+[#46]: https://github.com/godaddy/carpenterd/pull/46
+
