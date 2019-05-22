@@ -1,5 +1,9 @@
 # CHANGELOG
 
+- [#47] Update `README.md`
+  - Provide links to relevant projects and modules
+  - Add badges
+  - Update minor and patch versions of dependencies to resolve security warnings
 - [#46] Default documenation
   - Add: `CONTRUBUTING.md`, `SECURITY.md`
   - update `LICENSE` year
