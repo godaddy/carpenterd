@@ -31,4 +31,5 @@
 - [#33] Default `this.target` and use it as the default for `this.rootDir`.
 
 [#46]: https://github.com/godaddy/carpenterd/pull/46
+[#47]: https://github.com/godaddy/carpenterd/pull/47
 
