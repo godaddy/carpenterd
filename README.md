@@ -9,7 +9,7 @@
 Build and compile npm packages to run in the browser. This API is capable of
 building modules through different build systems. The aim is to have full
 cross-build-system API that serves a single file to be used in the browser.
-Note that this API should only be hit from the [`warehouse.ai`][warehouse.ai].
+Note that this API should only be hit from [`warehouse.ai`][warehouse.ai].
 
 ## Install
 
@@ -176,8 +176,6 @@ extracted from the keywords. Defaults to ES6.
 **target:** writes the package and its dependencies to a temporary folder
 named after `build.id` a unique v4 `id`. After building this folder is
 removed from the file system to save disk space.
-
-**env:** Retrieved from the package.json `env` property.
 
 **version:** read from the package.json `dist-tags.latest`. Has no default.
 
