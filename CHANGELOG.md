@@ -1,5 +1,7 @@
 # CHANGELOG
 
+- Make retryable write-stream for writing with status-writer
+
 - [#47] Update `README.md`
   - Provide links to relevant projects and modules
   - Add badges
