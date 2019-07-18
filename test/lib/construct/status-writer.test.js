@@ -1,8 +1,8 @@
 /* eslint max-nested-callbacks: 0 */
 const StatusWriter = require('../../../lib/construct/status-writer');
+const nsqStream = require('../../../lib/construct/nsq-stream');
 const assume = require('assume');
 const sinon = require('sinon');
-const nsqStream = require('nsq-stream');
 const { performance } = require('perf_hooks');
 assume.use(require('assume-sinon'));
 
@@ -32,6 +32,7 @@ describe('StatusWriter', function () {
     mockWriteStream = {
       write: sinon.stub(),
       end: sinon.stub(),
+      on: sinon.stub(),
       _writableState: {}
     };
 
