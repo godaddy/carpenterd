@@ -6,15 +6,8 @@ node_js:
 matrix:
   allow_failures:
   - node_js: "10"
-addons:
-  apt:
-    packages:
-      - oracle-java8-installer
 before_install:
   - npm install -g npm@6
-  - sudo update-java-alternatives -s java-8-oracle
-  - export JAVA_HOME=/usr/lib/jvm/java-8-oracle
-  - java -version
   - sudo rm -rf /var/lib/cassandra/*
   - wget http://www.us.apache.org/dist/cassandra/3.11.4/apache-cassandra-3.11.4-bin.tar.gz && tar -xvzf apache-cassandra-3.11.4-bin.tar.gz
   - sudo sh ./apache-cassandra-3.11.4/bin/cassandra -R
