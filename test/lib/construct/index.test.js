@@ -259,7 +259,7 @@ describe('Construct', function () {
       assume(locales).to.include('en-GB');
       assume(locales).to.include('nl-NL');
       assume(locales).to.not.include('de-DE');
-      construct.models.Package.get = get;
+      construct.models.Package.get = get; // eslint-disable-line require-atomic-updates
     });
   });
 
