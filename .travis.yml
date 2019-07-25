@@ -7,7 +7,6 @@ matrix:
   allow_failures:
   - node_js: "10"
 before_install:
-  - npm install -g npm@6
   - sudo rm -rf /var/lib/cassandra/*
   - wget http://www.us.apache.org/dist/cassandra/3.11.4/apache-cassandra-3.11.4-bin.tar.gz && tar -xvzf apache-cassandra-3.11.4-bin.tar.gz
   - sudo sh ./apache-cassandra-3.11.4/bin/cassandra -R
