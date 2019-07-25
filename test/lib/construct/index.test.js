@@ -148,11 +148,11 @@ describe('Construct', function () {
     it('can also use keywords to identify the build type', async function () {
       local = data();
 
-      local.versions['1.0.0'].keywords = ['es2016'];
+      local.versions['1.0.0'].keywords = ['webpack'];
       delete local.versions['1.0.0'].build;
 
       const result = await construct.specs(local);
-      assume(result).to.have.property('type', 'es6');
+      assume(result).to.have.property('type', 'webpack');
     });
 
     it('will check properties on package.json', async function () {
@@ -332,7 +332,7 @@ describe('Construct', function () {
             '1.0.0': {
               name: 'test',
               keywords: [
-                'es6'
+                'webpack'
               ]
             }
           },
@@ -391,7 +391,7 @@ describe('Construct', function () {
             '1.0.0': {
               name: 'test',
               keywords: [
-                'es6'
+                'webpack'
               ]
             }
           },
@@ -408,14 +408,14 @@ describe('Construct', function () {
           // start, progress, finished, and actual queueing per locale (en-LOL, not-REAL) and progress start/end
           assume(writerSpy).is.called(9);
 
-          assertNsqLocaleProgress(writerSpy, 'en-LOL', 'es6');
-          assertNsqLocaleProgress(writerSpy, 'not-REAL', 'es6');
+          assertNsqLocaleProgress(writerSpy, 'en-LOL', 'webpack');
+          assertNsqLocaleProgress(writerSpy, 'not-REAL', 'webpack');
 
           assume(writerSpy).is.calledWithMatch(statusTopic, {
             eventType: 'queued',
             name: 'test',
             env: 'dev',
-            buildType: 'es6',
+            buildType: 'webpack',
             total: 2,
             message: 'Builds Queued'
           });
