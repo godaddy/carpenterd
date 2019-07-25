@@ -52,13 +52,8 @@ expects a POST payload that is similar to `npm publish`.
   "dist-tags": {
     "latest": "0.0.0"                 // Used to extract the version.
   },
-  "build": "es6",                     // Overrule the build system type.
+  "build": "webpack",                 // Overrule the build system type.
   "main": "index.jsx",
-  "keywords": [                       // Used to differentiate build system type.
-    "test",
-    "carpenter",
-    "es6"
-  ],
   "_attachments":{
     "test-0.0.0.tgz": {
       "data": "...",                  // base64 encoded tarball of npm pack.
@@ -99,14 +94,8 @@ subscribe to NSQ and perform the actual builds. To maximize the developer
 experience it will use the same configuration you use locally. In any case
 the result should equal the local build output, with the exception of
 additional minification, etc. Minification will only be performed if the
-`env` is set to `prod`, e.g. for `npm dist-tags 'package@version' prod`. If
-no build is specified by default an ES6 transpilation will be performed.
+`env` is set to `prod`, e.g. for `npm dist-tags 'package@version' prod`.
 The following builds systems are currently available.
-
-* _ES6 transpilation:_ will read the `main` file as determined from the
-`package.json` and output ES3/5 compliant code. [Babel] is used to compile
-the code. Widgets or components composed of a single file will be suited for
-these types of builds and directly available for web projects.
 
 * _Browserify:_ will read the `main` file as determined from the
 `package.json` and bundle all modules that are imported/required.
@@ -124,9 +113,8 @@ All files in the output directory will be published to [BFFS].
 Specify a build system in `package.json` with the `build` keyword or use
 any of the following terms in the keywords:
 
-1. ES6 transpilation: `es2017`, `es2016`, `es2015`, `es6`
-2. Webpack: `webpack`
-3. Browserify: `browserify`
+1. Webpack: `webpack`
+2. Browserify: `browserify`
 
 Alternatively specifying the build system name on the `package.json` with
 the relative path to the configuration file will also classify the build
@@ -171,7 +159,7 @@ combination of `package.json`, build system configuration files and
 defaults from Carpenters configuration.
 
 **type:** can be supplied as `build` property on the package.json or is
-extracted from the keywords. Defaults to ES6.
+extracted from the keywords. Defaults to Webpack.
 
 **target:** writes the package and its dependencies to a temporary folder
 named after `build.id` a unique v4 `id`. After building this folder is

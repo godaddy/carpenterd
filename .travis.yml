@@ -1,13 +1,14 @@
 sudo: required
+dist: trusty
 language: node_js
 node_js:
-  - "8"
   - "10"
+  - "12"
 matrix:
   allow_failures:
-  - node_js: "10"
-services:
-  - cassandra
-  - redis-server
+  - node_js: "12"
 before_install:
-  - "npm install -g npm@latest-5"
+  - sudo rm -rf /var/lib/cassandra/*
+  - wget http://www.us.apache.org/dist/cassandra/3.11.4/apache-cassandra-3.11.4-bin.tar.gz && tar -xvzf apache-cassandra-3.11.4-bin.tar.gz
+  - sudo sh ./apache-cassandra-3.11.4/bin/cassandra -R
+  - sleep 20
