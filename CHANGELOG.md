@@ -1,5 +1,7 @@
 # CHANGELOG
 
+### 5.0.0
+
 - Make retryable write-stream for writing with status-writer
 
 - [#47] Update `README.md`
