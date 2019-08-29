@@ -4,6 +4,7 @@
 'use strict';
 
 const Writer = require('../../mocks').Writer;
+const MockProgress = require('../../mocks').Progress;
 const sinon = require('sinon');
 
 describe('Construct', function () {
@@ -425,6 +426,44 @@ describe('Construct', function () {
       });
 
       assume(progress).to.be.instanceof(Progress);
+    });
+  });
+
+  describe('#construct.builder', function () {
+
+    it('should publish to nsq only once for a single locale if there is no error on publish', async function () {
+      const spec = {
+        name: 'my-package',
+        version: '7.0.0',
+        env: 'dev',
+        promote: true,
+        type: 'webpack'
+      };
+      const progress = new MockProgress();
+      const locale = 'en-US';
+      const writerStub = sinon.stub(construct.nsq.writer, 'publish')
+      writerStub.yieldsAsync(null, 'woooo');
+
+      await construct.builder.buildPerLocale({ spec, progress, locale });
+      assume(writerStub).is.called(1);
+    });
+
+    it('should retry on buildPerLocale on initial nsq failure', async function () {
+      const spec = {
+        name: 'my-package',
+        version: '7.0.0',
+        env: 'dev',
+        promote: true,
+        type: 'webpack'
+      };
+      const progress = new MockProgress();
+      const locale = 'en-US';
+      const writerStub = sinon.stub(construct.nsq.writer, 'publish');
+      writerStub.onCall(0).yieldsAsync(new Error('Whoops'));
+      writerStub.onCall(1).yieldsAsync(null, 'woooo');
+
+      await construct.builder.buildPerLocale({ spec, progress, locale });
+      assume(writerStub).is.called(2);
     });
   });
 });
