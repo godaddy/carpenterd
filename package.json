@@ -63,7 +63,7 @@
     "retryme": "^1.1.0",
     "safe-regex": "~2.0.2",
     "slay": "~2.0.0",
-    "slay-config": "^2.2.0",
+    "slay-config": "^2.3.0",
     "slay-contextlog": "~2.0.0",
     "slay-log": "^2.3.0",
     "tar-fs": "^2.0.0",
