@@ -1,5 +1,7 @@
 # CHANGELOG
 
+- Use updated `nsq.js-k8` to get built in retries on publish
+
 ### 5.0.0
 
 - Make retryable write-stream for writing with status-writer
