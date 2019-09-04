@@ -22,7 +22,7 @@ afterEach(function () {
   sinon.restore();
 });
 
-describe('Application routes', function () {
+describe.only('Application routes', function () {
   this.timeout(5E5); // eslint-disable-line
   let app;
 
@@ -52,7 +52,7 @@ describe('Application routes', function () {
   before(function (done) {
     application.start({
       logger: {
-        level: 'critical'
+        level: 'debug'
       },
       ensure: true,
       config: {

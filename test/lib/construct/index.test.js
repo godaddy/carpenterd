@@ -256,8 +256,12 @@ describe('Construct', function () {
     it('launches a build process and returns a progress stream', function (done) {
       const prepareStub = sinon.stub(Object.getPrototypeOf(construct.builder), 'prepare').resolves({
         config: {
+          wrhs: {
+            build: true,
+            locales: [ ]
+          },
           pkg: {
-            
+            build: true
           }
         }
       });
@@ -287,6 +291,17 @@ describe('Construct', function () {
     });
 
     it('returns early if the package.json has a build flag that is set to false', function (done) {
+      const prepareStub = sinon.stub(Object.getPrototypeOf(construct.builder), 'prepare').resolves({
+        config: {
+          wrhs: {
+            build: true,
+            locales: [ ]
+          },
+          pkg: {
+            build: true
+          }
+        }
+      });
       const progress = construct.build({
         promote: false,
         data: {
@@ -317,8 +332,17 @@ describe('Construct', function () {
     it('writes out the expected nsq messages', function (done) {
       const writerSpy = sinon.spy(construct.nsq.writer, 'publish');
       const constructProto = Object.getPrototypeOf(construct);
-      const prepareStub = sinon.stub(constructProto, 'prepare').resolves({});
-      const getLocalesStub = sinon.stub(constructProto, 'getLocales').resolves(['en-LOL', 'not-REAL']);
+      const prepareStub = sinon.stub(Object.getPrototypeOf(construct.builder), 'prepare').resolves({
+        config: {
+          wrhs: {
+            build: 'es6',
+            locales: ['en-LOL', 'not-REAL']
+          },
+          pkg: {
+            build: 'es6'
+          }
+        }
+      });
 
       const progress = construct.build({
         promote: false,
@@ -339,7 +363,6 @@ describe('Construct', function () {
       }, function (error) {
         assume(error).to.be.falsey();
         assume(prepareStub).is.called(1);
-        assume(getLocalesStub).is.called(1);
         // We end the work as soon as everything is queued, even though we may still end up doing a bit more
         setTimeout(() => {
           // start, progress, finished, and actual queueing per locale (en-LOL, not-REAL) and progress start/end
