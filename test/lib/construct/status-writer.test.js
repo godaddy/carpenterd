@@ -1,6 +1,6 @@
 /* eslint max-nested-callbacks: 0 */
 const StatusWriter = require('../../../lib/construct/status-writer');
-const nsqStream = require('../../../lib/construct/nsq-stream');
+const nsqStream = require('nsq-stream');
 const assume = require('assume');
 const sinon = require('sinon');
 const { performance } = require('perf_hooks');
