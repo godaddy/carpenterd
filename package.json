@@ -13,7 +13,9 @@
     "test:mocha": "mocha 'test/**/*.test.js'",
     "watch": "mocha --watch --reporter spec $(find test -path test/fixtures -prune -o -name '*.test.js')",
     "eslint": "eslint-godaddy -c .eslintrc lib/ test/lib/",
-    "posttest": "npm run eslint"
+    "posttest": "npm run eslint",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -72,7 +74,8 @@
     "uglify-js": "^3.6.0",
     "walk": "~2.3.14",
     "warehouse-models": "^5.9.1",
-    "winston": "^3.2.0"
+    "winston": "^3.2.0",
+    "snyk": "^1.230.5"
   },
   "devDependencies": {
     "assume": "^2.2.0",
@@ -88,5 +91,6 @@
     "nyc": "^14.1.0",
     "rip-out": "^1.0.0",
     "sinon": "^7.3.2"
-  }
+  },
+  "snyk": true
 }
