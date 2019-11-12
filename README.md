@@ -235,10 +235,17 @@ The possible values that carpenterd will send are:
 
 ## Tests
 
-Running tests requires a running cassandra instance on your local machine
-and a key/value store like Redis.
+Run an AWS local cloud stack, pull `latest` [localstack].
+This requires `docker` [to be setup][docker].
 
-```bash
+```sh
+docker pull localstack/localstack:latest
+npm run localstack
+```
+
+Run tests in a separate terminal.
+
+```sh
 npm test
 ```
 
@@ -252,3 +259,4 @@ npm test
 [whisper]: https://github.com/jcrugzz/whisper.json
 [browserify]: http://browserify.org/
 [Babel]: https://babeljs.io/
+[docker]: https://docs.docker.com/get-started/
