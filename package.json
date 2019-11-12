@@ -12,7 +12,7 @@
     "test": "nyc npm run test:mocha",
     "test:mocha": "mocha 'test/**/*.test.js'",
     "watch": "mocha --watch --reporter spec $(find test -path test/fixtures -prune -o -name '*.test.js')",
-    "localstack": "docker run -it -p 4569:4569 -p 4572:4572 --rm localstack/localstack",
+    "localstack": "docker run -it -p 4569:4569 --rm localstack/localstack",
     "eslint": "eslint-godaddy -c .eslintrc lib/ test/lib/",
     "posttest": "npm run eslint"
   },

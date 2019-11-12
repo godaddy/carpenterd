@@ -24,9 +24,6 @@
   "redis": {
     "uri": "redis://127.0.0.1:6379"
   },
-  "s3": {
-    "endpoint": "http://localhost:4572"
-  },
   "bffs": {
     "prefix": "wrhs",
     "cdn": {
