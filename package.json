@@ -81,6 +81,7 @@
     "assume": "^2.2.0",
     "assume-sinon": "^1.0.1",
     "babel-eslint": "^10.0.1",
+    "clone": "^2.1.2",
     "eslint": "^6.1.0",
     "eslint-config-godaddy": "^3.1.0",
     "eslint-plugin-json": "^1.4.0",
