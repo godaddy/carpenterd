@@ -3,6 +3,7 @@
 
 const Writer = require('../../mocks').Writer;
 const clone = require('clone');
+const async = require('async');
 const assume = require('assume');
 const sinon = require('sinon');
 const packages = require('../../fixtures/packages.json');
@@ -12,7 +13,7 @@ const path = require('path');
 describe('Scheduler', function () {
   this.timeout(5E4);
   let app = require('../../../lib');
-  let scheduler;
+  let scheduler, Package;
 
   before(function (done) {
     app.start({
@@ -36,13 +37,17 @@ describe('Scheduler', function () {
       app.nsq.writer = app.nsq.writer || new Writer();
       app.scheduler.nsq = app.nsq;
       scheduler = app.scheduler;
-      done();
+      Package = scheduler.models.Package;
+
+      async.parallel(packages.map(pkg => Package.create.bind(Package, pkg)), done);
     });
   });
 
-
   after(function (done) {
-    app.close(done);
+    async.parallel(packages.map(pkg => Package.remove.bind(Package, pkg)), function (error) {
+      if (error) return done(error);
+      app.close(done);
+    });
   });
 
   afterEach(function () {
@@ -50,7 +55,6 @@ describe('Scheduler', function () {
   });
 
   it('setInterval should schedule a job that completes', function (done) {
-    sinon.stub(scheduler.models.PackageCache, 'findAll').yieldsAsync(null, clone(packages));
     const headStub = sinon.stub(scheduler.models.BuildHead, 'findAll');
     headStub.onCall(0).yieldsAsync(null, clone(heads.same['my-client-side-package']));
     headStub.onCall(1).yieldsAsync(null, clone(heads.same['my-other-client-side-package']));
@@ -78,7 +82,6 @@ describe('Scheduler', function () {
   });
 
   it('should trigger a single build for each package when running schedule', function (done) {
-    sinon.stub(scheduler.models.PackageCache, 'findAll').yieldsAsync(null, clone(packages));
     const headStub = sinon.stub(scheduler.models.BuildHead, 'findAll');
     headStub.onCall(0).yieldsAsync(null, clone(heads.missing['my-client-side-package']));
     headStub.onCall(1).yieldsAsync(null, clone(heads.missing['my-other-client-side-package']));
@@ -95,7 +98,6 @@ describe('Scheduler', function () {
   });
 
   it('should trigger zero builds when there are no behind packages', function (done) {
-    sinon.stub(scheduler.models.PackageCache, 'findAll').yieldsAsync(null, clone(packages));
     const headStub = sinon.stub(scheduler.models.BuildHead, 'findAll');
     headStub.onCall(0).yieldsAsync(null, clone(heads.same['my-client-side-package']));
     headStub.onCall(1).yieldsAsync(null, clone(heads.same['my-other-client-side-package']));
@@ -110,5 +112,4 @@ describe('Scheduler', function () {
       done();
     });
   });
-
 });
