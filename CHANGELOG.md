@@ -1,5 +1,7 @@
 # CHANGELOG
 
+- [#60] Use DynamoDB based models.
+
 ### 5.1.0
 
 - Use updated `nsq.js-k8` to get built in retries on publish
@@ -40,4 +42,5 @@
 
 [#46]: https://github.com/godaddy/carpenterd/pull/46
 [#47]: https://github.com/godaddy/carpenterd/pull/47
+[#60]: https://github.com/godaddy/carpenterd/pull/60
 
