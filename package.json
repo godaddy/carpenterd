@@ -32,6 +32,8 @@
   "license": "MIT",
   "dependencies": {
     "async": "~3.1.0",
+    "aws-liveness": "^1.1.0",
+    "aws-sdk": "^2.569.0",
     "bffs": "^7.0.0",
     "bl": "^3.0.0",
     "body-parser": "^1.19.0",
@@ -39,6 +41,7 @@
     "clean-css": "~4.2.1",
     "create-servers": "~3.0.0",
     "diagnostics": "~2.0.2",
+    "dynamodb-x": "^1.2.3",
     "emits": "~3.0.0",
     "errs": "~0.3.2",
     "feedsme-api-client": "^3.0.0",
