@@ -1,5 +1,7 @@
 # CHANGELOG
 
+### 6.0.0
+
 - [#60] Use DynamoDB based models.
 
 ### 5.1.0
