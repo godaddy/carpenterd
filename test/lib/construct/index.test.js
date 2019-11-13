@@ -231,7 +231,6 @@ describe('Construct', function () {
     });
 
     it('generates an intersection of locales for all dependencies', async function () {
-      const get = construct.models.Package.get;
       const packages = {
         myPackage: {
           name: 'myPackage',
@@ -246,9 +245,11 @@ describe('Construct', function () {
         }
       };
 
-      construct.models.Package.get = function (name, cb) {
-        cb(null, packages[name]);
-      };
+      sinon
+        .stub(construct.models.Package, 'get')
+        .onFirstCall().callsArgWith(1, null, packages.myPackage)
+        .onSecondCall().callsArgWith(1, null, packages.react)
+        .onThirdCall().callsArgWith(1, null, packages.subsub);
 
       localeData.versions['1.0.0'].dependencies = {
         myPackage: 'some latest version',
@@ -260,7 +261,6 @@ describe('Construct', function () {
       assume(locales).to.include('en-GB');
       assume(locales).to.include('nl-NL');
       assume(locales).to.not.include('de-DE');
-      construct.models.Package.get = get; // eslint-disable-line require-atomic-updates
     });
   });
 

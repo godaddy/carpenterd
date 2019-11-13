@@ -35,7 +35,7 @@ describe('Application routes', function () {
 
   function nockFeedme() {
     nock(app.config.get('feedsme'))
-      .post('v2/change')
+      .post('/v2/change')
       .reply(200, function reply(uri, body) {
         const pkgjson = getPayload(payload);
 
