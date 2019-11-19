@@ -1,5 +1,7 @@
 # CHANGELOG
 
+### 6.0.1
+
 - [#61] Fix winson formatting broken with `winston@3` upgrade
 
 ### 6.0.0
