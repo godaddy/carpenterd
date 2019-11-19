@@ -1,5 +1,7 @@
 # CHANGELOG
 
+- [#61] Fix winson formatting broken with `winston@3` upgrade
+
 ### 6.0.0
 
 - [#60] Use DynamoDB based models.
@@ -45,4 +47,5 @@
 [#46]: https://github.com/godaddy/carpenterd/pull/46
 [#47]: https://github.com/godaddy/carpenterd/pull/47
 [#60]: https://github.com/godaddy/carpenterd/pull/60
+[#61]: https://github.com/godaddy/carpenterd/pull/61
 
