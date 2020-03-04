@@ -1,10 +1,12 @@
 # CHANGELOG
 
+### 6.0.2
+
 - Fix `packer.js` log entry so that the `spec.name` field doesn't end up spread in the log entry
 
 ### 6.0.1
 
-- [#61] Fix winson formatting broken with `winston@3` upgrade
+- [#61] Fix winston formatting broken with `winston@3` upgrade
 
 ### 6.0.0
 
