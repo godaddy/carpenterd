@@ -57,7 +57,7 @@
     "node-uuid": "~1.4.3",
     "npm": "^6.9.0",
     "nsq-stream": "^2.1.0",
-    "nsq.js-k8": "^1.2.0",
+    "nsq.js-k8": "^1.2.1",
     "object-assign": "~4.1.1",
     "one-time": "~1.0.0",
     "p-limit": "^2.2.1",
