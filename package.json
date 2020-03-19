@@ -52,7 +52,7 @@
     "json-try-parse": "~1.0.0",
     "lodash.intersection": "~4.4.0",
     "lodash.omit": "^4.5.0",
-    "minimist": "~1.2.0",
+    "minimist": "~1.2.3",
     "mkdirp": "^0.5.1",
     "node-uuid": "~1.4.3",
     "npm": "^6.9.0",
