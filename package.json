@@ -55,7 +55,7 @@
     "minimist": "~1.2.0",
     "mkdirp": "^0.5.1",
     "node-uuid": "~1.4.3",
-    "npm": "^6.9.0",
+    "npm": "^6.14.6",
     "nsq-stream": "^2.1.0",
     "nsq.js-k8": "^1.2.1",
     "object-assign": "~4.1.1",
