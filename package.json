@@ -72,7 +72,7 @@
     "tar-fs": "^2.0.0",
     "through2": "~3.0.1",
     "toml": "^3.0.0",
-    "uglify-js": "^3.6.0",
+    "uglify-js": "^3.14.3",
     "walk": "~2.3.14",
     "warehouse-models": "^6.0.0",
     "winston": "^3.2.0"
