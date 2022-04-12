@@ -65,7 +65,7 @@
     "resolve": "^1.12.0",
     "retryme": "^1.1.0",
     "safe-regex": "^2.1.1",
-    "slay": "^3.1.1",
+    "slay": "^4.0.0",
     "slay-config": "^2.3.0",
     "slay-contextlog": "~2.0.0",
     "slay-log": "^2.3.0",
