@@ -32,7 +32,7 @@
   "author": "GoDaddy.com Operating Company LLC",
   "license": "MIT",
   "dependencies": {
-    "async": "~3.1.0",
+    "async": "~3.2.2",
     "aws-liveness": "^1.1.0",
     "aws-sdk": "^2.569.0",
     "bffs": "^7.0.0",
