@@ -1,0 +1,29 @@
+name: Converted Workflow
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - '*'
+env:
+  AWS_ACCESS_KEY_ID: foobar
+  AWS_SECRET_ACCESS_KEY: fooba
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: localstack
+    strategy:
+      matrix:
+        include:
+          - node-version: 14.x
+            AWS_ACCESS_KEY_ID: foobar
+            AWS_SECRET_ACCESS_KEY: foobar
+    steps:
+      - name: 'Set up Node.js ${{ matrix.node-version }}'
+        uses: actions/setup-node@v3
+        with:
+          node-version: '${{ matrix.node-version }}'
+      - uses: actions/checkout@v3
+      - run: npm install
+      - run: npm test
