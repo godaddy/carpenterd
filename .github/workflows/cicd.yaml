@@ -12,18 +12,23 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: localstack
     strategy:
       matrix:
-        include:
-          - node-version: 14.x
-            AWS_ACCESS_KEY_ID: foobar
-            AWS_SECRET_ACCESS_KEY: foobar
+        node-version: [14, 16]
     steps:
-      - name: 'Set up Node.js ${{ matrix.node-version }}'
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+      - name: Prepare Localstack container
+        run: |
+            docker-compose -f docker-compose.yaml up -d
+            sleep 20
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '${{ matrix.node-version }}'
-      - uses: actions/checkout@v3
-      - run: npm install
-      - run: npm test
+          node-version: ${{ matrix.node-version }}
+          
+      - name: Install Dependencies
+        run: npm install
+      
+      - name: Run Tests
+        run: npm test
