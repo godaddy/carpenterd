@@ -1,0 +1,23 @@
+version: '3.6'
+
+services:
+  localstack:
+    container_name: localstack
+    environment:
+      - DEBUG=1
+      - LOCALSTACK_HOSTNAME=localhost
+      - TEST_AWS_ACCOUNT_ID=000000000000
+      - AWS_DEFAULT_REGION=us-west-2
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - DATA_DIR=/tmp/localstack/data
+      - KINESIS_STREAM_SHARDS=1
+      - KINESIS_ERROR_PROBABILITY=0.0
+      - KINESIS_STREAM_NAME=kinesis-stream
+      - KINESIS_PROVIDER=kinesalite
+      - AWS_ACCESS_KEY_ID=foobar
+      - AWS_SECRET_ACCESS_KEY=foobar
+    image: localstack/localstack:latest
+    ports:
+      - "4566:4566"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

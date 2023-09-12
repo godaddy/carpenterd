@@ -1,0 +1,34 @@
+name: Converted Workflow
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - '*'
+env:
+  AWS_ACCESS_KEY_ID: foobar
+  AWS_SECRET_ACCESS_KEY: fooba
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14, 16]
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+      - name: Prepare Localstack container
+        run: |
+            docker-compose -f docker-compose.yml up -d
+            sleep 20
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install Dependencies
+        run: npm install
+      
+      - name: Run Tests
+        run: npm test
